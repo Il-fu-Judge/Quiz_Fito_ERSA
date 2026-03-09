@@ -1,123 +1,269 @@
-// main.js
-
-// Lista delle domande da escludere (ban list)
-const bannedQuestions = [70, 140, 141, 148]; // aggiungi qui gli ID da escludere
+// BAN LIST per domande da non utilizzare
+const bannedQuestions = [70, 140, 141, 148];
 
 let allQuestions = [];
 let quizQuestions = [];
 let current = 0;
 let correctCount = 0;
+
 let timerInterval;
-const TIME_PER_QUESTION = 60; // secondi
+const TIME_PER_QUESTION = 60;
 
-// Elementi DOM
-const quizContainer = document.getElementById('quiz-container');
-const startBtn = document.getElementById('start-btn');
-const startScreen = document.getElementById('start-screen');
-const scoreDisplay = document.getElementById('score');
+const quizContainer = document.getElementById("quiz-container");
+const startBtn = document.getElementById("start-btn");
+const startScreen = document.getElementById("start-screen");
+const scoreDisplay = document.getElementById("score");
 
-startBtn.addEventListener('click', startQuiz);
+startBtn.addEventListener("click", startQuiz);
 
-// Avvia il quiz
+
+// AVVIO QUIZ
 async function startQuiz() {
-  const res = await fetch('quiz.json');
-  allQuestions = await res.json();
 
-  // Filtra le domande escluse
-  const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
+    const res = await fetch("quiz.json");
+    allQuestions = await res.json();
 
-  // Scegli 30 domande casuali
-  quizQuestions = shuffle(availableQuestions).slice(0, 30);
+    const availableQuestions = allQuestions.filter(
+        q => !bannedQuestions.includes(q.id)
+    );
 
-  startScreen.style.display = 'none';
-  quizContainer.style.display = 'block';
-  correctCount = 0;
-  current = 0;
-  showQuestion();
+    quizQuestions = shuffle(availableQuestions).slice(0, 30);
+
+    startScreen.style.display = "none";
+    quizContainer.style.display = "block";
+
+    correctCount = 0;
+    current = 0;
+
+    showQuestion();
 }
 
-// Funzione per mescolare le domande
+
+// RANDOM DOMANDE
 function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
+    return array.sort(() => Math.random() - 0.5);
 }
 
-// Mostra la domanda corrente
+
+// MOSTRA DOMANDA
 function showQuestion() {
-  const q = quizQuestions[current];
-  const correctIndex = q.correct; // già 0,1,2 nel JSON corretto
 
-  quizContainer.innerHTML = `
-    <div id="timer">Tempo: ${TIME_PER_QUESTION}s</div>
-    <div class="question"><strong>Domanda ${current+1}:</strong> ${q.question}</div>
-    ${q.options.map((opt,i) => `<div class="option" data-index="${i}">${opt}</div>`).join('')}
-  `;
-  updateScore();
-  startTimer(correctIndex);
+    const q = quizQuestions[current];
+    const correctIndex = q.correct;
 
-  document.querySelectorAll('.option').forEach(btn => {
-    btn.addEventListener('click', () => selectAnswer(btn, correctIndex));
-  });
+    quizContainer.innerHTML = `
+        <div id="timer">Tempo: 60</div>
+
+        <div id="timeBarContainer">
+            <div id="timeBar"></div>
+        </div>
+
+        <div class="question">
+            <strong>Domanda ${current + 1}</strong><br>
+            ${q.question}
+        </div>
+
+        ${q.options.map((opt, i) =>
+            `<div class="option" data-index="${i}">${opt}</div>`
+        ).join("")}
+
+        <button id="nextBtn" style="display:none;">Next</button>
+    `;
+
+    updateScore();
+
+    startTimer(correctIndex);
+
+    document.querySelectorAll(".option").forEach(btn => {
+        btn.addEventListener("click", () => selectAnswer(btn, correctIndex));
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", nextQuestion);
 }
 
-// Gestione della selezione della risposta
+
+// SELEZIONE RISPOSTA
 function selectAnswer(selectedBtn, correctIndex) {
-  stopTimer();
 
-  const buttons = document.querySelectorAll('.option');
-  buttons.forEach((btn, i) => {
-    if (i === correctIndex) btn.classList.add('correct'); // evidenzia sempre la risposta corretta
-  });
+    stopTimer();
 
-  const selectedIndex = parseInt(selectedBtn.dataset.index);
-  if (selectedIndex === correctIndex) {
-    correctCount++;
-    selectedBtn.classList.add('correct');
-  } else {
-    selectedBtn.classList.add('wrong');
-  }
+    const buttons = document.querySelectorAll(".option");
 
-  // passa alla prossima domanda dopo 1.3 secondi
-  setTimeout(() => {
-    current++;
-    if (current < quizQuestions.length) showQuestion();
-    else showResult();
-  }, 1300);
-}
+    buttons.forEach((btn, i) => {
 
-// Mostra il risultato finale
-function showResult() {
-  quizContainer.innerHTML = `<h2>Quiz completato! Risposte corrette: ${correctCount} / ${quizQuestions.length}</h2>`;
-  scoreDisplay.innerHTML = '';
-}
+        btn.style.pointerEvents = "none";
 
-// Timer per la domanda
-function startTimer(correctIndex) {
-  let time = TIME_PER_QUESTION;
-  const timerElem = document.getElementById('timer');
-  timerElem.textContent = `Tempo: ${time}s`;
+        if (i === correctIndex) {
+            btn.classList.add("correct");
+        }
 
-  timerInterval = setInterval(() => {
-    time--;
-    timerElem.textContent = `Tempo: ${time}s`;
-    if (time <= 0) {
-      stopTimer();
-      // evidenzia risposta corretta
-      document.querySelectorAll('.option')[correctIndex].classList.add('correct');
-      setTimeout(() => {
-        current++;
-        if (current < quizQuestions.length) showQuestion();
-        else showResult();
-      }, 1300);
+    });
+
+    const selectedIndex = parseInt(selectedBtn.dataset.index);
+
+    if (selectedIndex === correctIndex) {
+
+        correctCount++;
+        selectedBtn.classList.add("correct");
+
+    } else {
+
+        selectedBtn.classList.add("wrong");
+
     }
-  }, 1300);
+
+    document.getElementById("nextBtn").style.display = "block";
 }
 
-// Ferma il timer
+
+// NEXT DOMANDA
+function nextQuestion() {
+
+    current++;
+
+    if (current < quizQuestions.length) {
+
+        showQuestion();
+
+    } else {
+
+        showResult();
+
+    }
+
+}
+
+
+// RISULTATO FINALE
+function showResult() {
+
+    let background = "";
+    let message = "";
+
+    if (correctCount >= 28) {
+
+        background = "#4CAF50";
+
+        message = `
+        🎉 Complimenti! 🎉<br><br>
+        Hai superato il test con un ottimo risultato.<br>
+        Sei decisamente preparato!`;
+
+    } 
+    else if (correctCount >= 23) {
+
+        background = "#ff9800";
+
+        message = `
+        👍 Buon lavoro!<br><br>
+        Sei vicino alla preparazione completa.<br>
+        Un piccolo ripasso e sarai pronto!`;
+
+    } 
+    else {
+
+        background = "#f44336";
+
+        message = `
+        📚 Continua a studiare!<br><br>
+        Questo test serve proprio per allenarsi.<br>
+        Ripassa gli argomenti e riprova!`;
+
+    }
+
+    quizContainer.innerHTML = `
+        <div id="resultScreen" style="
+            background:${background};
+            color:white;
+            padding:40px;
+            border-radius:10px;
+            text-align:center;
+        ">
+            <h2>Risultato finale</h2>
+
+            <h1>${correctCount} / ${quizQuestions.length}</h1>
+
+            <p style="font-size:18px;margin-top:20px;">
+                ${message}
+            </p>
+
+            <button id="restartBtn" style="
+                margin-top:30px;
+                padding:12px 20px;
+                font-size:16px;
+                cursor:pointer;
+                border:none;
+                border-radius:6px;
+            ">
+            Rifai il quiz
+            </button>
+        </div>
+    `;
+
+    scoreDisplay.innerHTML = "";
+
+    document.getElementById("restartBtn").addEventListener("click", () => {
+        location.reload();
+    });
+
+}
+
+
+// TIMER
+function startTimer(correctIndex) {
+
+    let time = TIME_PER_QUESTION;
+
+    const timerElem = document.getElementById("timer");
+    const bar = document.getElementById("timeBar");
+
+    timerElem.textContent = "Tempo: " + time;
+    bar.style.width = "100%";
+
+    timerInterval = setInterval(() => {
+
+        time--;
+
+        timerElem.textContent = "Tempo: " + time;
+        bar.style.width = (time / TIME_PER_QUESTION * 100) + "%";
+
+        if (time <= 0) {
+
+            stopTimer();
+            autoFail(correctIndex);
+
+        }
+
+    }, 1000);
+}
+
+
+// TEMPO SCADUTO
+function autoFail(correctIndex) {
+
+    const buttons = document.querySelectorAll(".option");
+
+    buttons.forEach((btn, i) => {
+
+        btn.style.pointerEvents = "none";
+
+        if (i === correctIndex) {
+            btn.classList.add("correct");
+        }
+
+    });
+
+    document.getElementById("nextBtn").style.display = "block";
+}
+
+
+// STOP TIMER
 function stopTimer() {
-  clearInterval(timerInterval);
+    clearInterval(timerInterval);
 }
 
-// Aggiorna contatore delle risposte corrette
+
+// AGGIORNA CONTATORE
 function updateScore() {
-  scoreDisplay.textContent = `Corrette: ${correctCount} / ${quizQuestions.length}`;
+    scoreDisplay.textContent = `Corrette: ${correctCount} / ${quizQuestions.length}`;
 }
