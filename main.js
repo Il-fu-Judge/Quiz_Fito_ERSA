@@ -52,6 +52,7 @@ function showQuestion() {
     const correctIndex = q.correct;
 
     quizContainer.innerHTML = `
+
         <div id="timer">Tempo: 60</div>
 
         <div id="timeBarContainer">
@@ -71,7 +72,6 @@ function showQuestion() {
     `;
 
     updateScore();
-
     startTimer(correctIndex);
 
     document.querySelectorAll(".option").forEach(btn => {
@@ -147,56 +147,36 @@ function showResult() {
         message = `
         🎉 Complimenti! 🎉<br><br>
         Hai superato il test con un ottimo risultato.<br>
-        Sei decisamente preparato!`;
+        Sei decisamente preparato!
+        `;
 
-    } 
-    else if (correctCount >= 23) {
+    } else if (correctCount >= 23) {
 
         background = "#ff9800";
 
         message = `
         👍 Buon lavoro!<br><br>
         Sei vicino alla preparazione completa.<br>
-        Un piccolo ripasso e sarai pronto!`;
+        Un piccolo ripasso e sarai pronto!
+        `;
 
-    } 
-    else {
+    } else {
 
         background = "#f44336";
 
         message = `
         📚 Continua a studiare!<br><br>
-        Questo test serve proprio per allenarsi.<br>
-        Ripassa gli argomenti e riprova!`;
+        Ripassa gli argomenti e riprova il test.
+        `;
 
     }
 
     quizContainer.innerHTML = `
-        <div id="resultScreen" style="
-            background:${background};
-            color:white;
-            padding:40px;
-            border-radius:10px;
-            text-align:center;
-        ">
+        <div id="resultScreen" style="background:${background}">
             <h2>Risultato finale</h2>
-
             <h1>${correctCount} / ${quizQuestions.length}</h1>
-
-            <p style="font-size:18px;margin-top:20px;">
-                ${message}
-            </p>
-
-            <button id="restartBtn" style="
-                margin-top:30px;
-                padding:12px 20px;
-                font-size:16px;
-                cursor:pointer;
-                border:none;
-                border-radius:6px;
-            ">
-            Rifai il quiz
-            </button>
+            <p>${message}</p>
+            <button id="restartBtn">Rifai il quiz</button>
         </div>
     `;
 
@@ -263,7 +243,7 @@ function stopTimer() {
 }
 
 
-// AGGIORNA CONTATORE
+// CONTATORE RISPOSTE
 function updateScore() {
     scoreDisplay.textContent = `Corrette: ${correctCount} / ${quizQuestions.length}`;
 }
