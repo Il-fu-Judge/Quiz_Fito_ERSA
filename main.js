@@ -76,12 +76,12 @@ function selectAnswer(selectedBtn, correctIndex) {
     selectedBtn.classList.add('wrong');
   }
 
-  // passa alla prossima domanda dopo 1 secondo
+  // passa alla prossima domanda dopo 1.3 secondi
   setTimeout(() => {
     current++;
     if (current < quizQuestions.length) showQuestion();
     else showResult();
-  }, 1000);
+  }, 1300);
 }
 
 // Mostra il risultato finale
@@ -107,9 +107,9 @@ function startTimer(correctIndex) {
         current++;
         if (current < quizQuestions.length) showQuestion();
         else showResult();
-      }, 1000);
+      }, 1300);
     }
-  }, 1000);
+  }, 1300);
 }
 
 // Ferma il timer
