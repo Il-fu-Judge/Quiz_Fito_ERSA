@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Fitosanitari</title>
+  <style>
+    body { font-family: Arial; margin: 2rem; }
+    #quiz-container { margin-top: 2rem; }
+    .option { display: block; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #ccc; cursor: pointer; border-radius: 5px; transition: background 0.3s; }
+    .option.correct { background-color: #8bc34a; color: white; }
+    .option.wrong { background-color: #f44336; color: white; }
+    #timer { font-weight: bold; margin-bottom: 1rem; }
+    #score { position: fixed; bottom: 10px; left: 10px; font-weight: bold; }
+    button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Quiz Fitosanitari</h1>
+  <div id="start-screen">
+    <button id="start-btn">Genera Quiz</button>
+  </div>
+  <div id="quiz-container" style="display:none;"></div>
+  <div id="score"></div>
+
+  <script src="main.js"></script>
+</body>
+</html>
