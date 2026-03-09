@@ -32,16 +32,18 @@ function shuffle(array) {
 
 function showQuestion() {
   const q = quizQuestions[current];
+  const correctIndex = parseInt(q.correct) - 1; // JSON usa 1,2,3 → array 0,1,2
+
   quizContainer.innerHTML = `
     <div id="timer">Tempo: ${TIME_PER_QUESTION}s</div>
     <div class="question"><strong>Domanda ${current+1}:</strong> ${q.question}</div>
     ${q.options.map((opt,i) => `<div class="option" data-index="${i}">${opt}</div>`).join('')}
   `;
   updateScore();
-  startTimer();
+  startTimer(correctIndex);
 
   document.querySelectorAll('.option').forEach(btn => {
-    btn.addEventListener('click', () => selectAnswer(btn, q.correct));
+    btn.addEventListener('click', () => selectAnswer(btn, correctIndex));
   });
 }
 
@@ -50,7 +52,7 @@ function selectAnswer(selectedBtn, correctIndex) {
 
   const buttons = document.querySelectorAll('.option');
   buttons.forEach((btn, i) => {
-    if (i === correctIndex) btn.classList.add('correct');
+    if (i === correctIndex) btn.classList.add('correct'); // evidenzia risposta corretta
   });
 
   const selectedIndex = parseInt(selectedBtn.dataset.index);
@@ -74,7 +76,7 @@ function showResult() {
   scoreDisplay.innerHTML = '';
 }
 
-function startTimer() {
+function startTimer(correctIndex) {
   let time = TIME_PER_QUESTION;
   const timerElem = document.getElementById('timer');
   timerElem.textContent = `Tempo: ${time}s`;
@@ -84,8 +86,8 @@ function startTimer() {
     timerElem.textContent = `Tempo: ${time}s`;
     if (time <= 0) {
       stopTimer();
-      // evidenzia la risposta corretta
-      document.querySelectorAll('.option')[quizQuestions[current].correct].classList.add('correct');
+      // evidenzia risposta corretta
+      document.querySelectorAll('.option')[correctIndex].classList.add('correct');
       setTimeout(() => {
         current++;
         if (current < quizQuestions.length) showQuestion();
