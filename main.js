@@ -53,22 +53,32 @@ function showQuestion() {
 
     quizContainer.innerHTML = `
 
-        <div id="timer">Tempo: 60</div>
+        <div class="quiz-screen">
 
-        <div id="timeBarContainer">
-            <div id="timeBar"></div>
+            <div id="timer">Tempo: 60</div>
+
+            <div id="timeBarContainer">
+                <div id="timeBar"></div>
+            </div>
+
+            <div class="question">
+                <strong>Domanda ${current + 1}</strong><br>
+                ${q.question}
+            </div>
+
+            <div class="answers">
+
+                ${q.options.map((opt, i) =>
+                    `<div class="option" data-index="${i}">${opt}</div>`
+                ).join("")}
+
+            </div>
+
+            <div class="next-container">
+                <button id="nextBtn" style="display:none;">Next</button>
+            </div>
+
         </div>
-
-        <div class="question">
-            <strong>Domanda ${current + 1}</strong><br>
-            ${q.question}
-        </div>
-
-        ${q.options.map((opt, i) =>
-            `<div class="option" data-index="${i}">${opt}</div>`
-        ).join("")}
-
-        <button id="nextBtn" style="display:none;">Next</button>
     `;
 
     updateScore();
