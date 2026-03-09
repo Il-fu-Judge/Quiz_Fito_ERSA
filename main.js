@@ -1,155 +1,249 @@
-const app = document.getElementById("app")
+// BAN LIST per domande da non utilizzare
+const bannedQuestions = [70, 140, 141, 148];
 
-let questions = []
-let currentQuestion = 0
-let score = 0
-let selectedAnswer = null
+let allQuestions = [];
+let quizQuestions = [];
+let current = 0;
+let correctCount = 0;
+
+let timerInterval;
+const TIME_PER_QUESTION = 60;
+
+const quizContainer = document.getElementById("quiz-container");
+const startBtn = document.getElementById("start-btn");
+const startScreen = document.getElementById("start-screen");
+const scoreDisplay = document.getElementById("score");
+
+startBtn.addEventListener("click", startQuiz);
 
 
-function showStartScreen(){
+// AVVIO QUIZ
+async function startQuiz() {
 
-    app.innerHTML = `
-    <div class="screen center-screen">
+    const res = await fetch("quiz.json");
+    allQuestions = await res.json();
 
-        <h1>Genera Quiz</h1>
+    const availableQuestions = allQuestions.filter(
+        q => !bannedQuestions.includes(q.id)
+    );
 
-        <button id="generateQuiz">Genera Quiz</button>
+    quizQuestions = shuffle(availableQuestions).slice(0, 30);
 
-    </div>
-    `
+    startScreen.style.display = "none";
+    quizContainer.style.display = "block";
 
-    document.getElementById("generateQuiz").addEventListener("click", generateQuiz)
+    correctCount = 0;
+    current = 0;
 
+    showQuestion();
 }
 
 
+// RANDOM DOMANDE
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
 
-function generateQuiz(){
 
-    questions = [
+// MOSTRA DOMANDA
+function showQuestion() {
 
-        {
-            question:"Qual è la capitale d'Italia?",
-            answers:["Milano","Roma","Napoli","Torino"],
-            correct:1
-        },
+    const q = quizQuestions[current];
+    const correctIndex = q.correct;
 
-        {
-            question:"Quanto fa 2 + 2 ?",
-            answers:["3","4","5","6"],
-            correct:1
-        },
+    quizContainer.innerHTML = `
 
-        {
-            question:"Quale pianeta è il più grande?",
-            answers:["Marte","Giove","Venere","Mercurio"],
-            correct:1
+        <div id="timer">Tempo: 60</div>
+
+        <div id="timeBarContainer">
+            <div id="timeBar"></div>
+        </div>
+
+        <div class="question">
+            <strong>Domanda ${current + 1}</strong><br>
+            ${q.question}
+        </div>
+
+        ${q.options.map((opt, i) =>
+            `<div class="option" data-index="${i}">${opt}</div>`
+        ).join("")}
+
+        <button id="nextBtn" style="display:none;">Next</button>
+    `;
+
+    updateScore();
+    startTimer(correctIndex);
+
+    document.querySelectorAll(".option").forEach(btn => {
+        btn.addEventListener("click", () => selectAnswer(btn, correctIndex));
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+}
+
+
+// SELEZIONE RISPOSTA
+function selectAnswer(selectedBtn, correctIndex) {
+
+    stopTimer();
+
+    const buttons = document.querySelectorAll(".option");
+
+    buttons.forEach((btn, i) => {
+
+        btn.style.pointerEvents = "none";
+
+        if (i === correctIndex) {
+            btn.classList.add("correct");
         }
 
-    ]
+    });
 
-    currentQuestion = 0
-    score = 0
+    const selectedIndex = parseInt(selectedBtn.dataset.index);
 
-    showQuestion()
+    if (selectedIndex === correctIndex) {
+
+        correctCount++;
+        selectedBtn.classList.add("correct");
+
+    } else {
+
+        selectedBtn.classList.add("wrong");
+
+    }
+
+    document.getElementById("nextBtn").style.display = "block";
+}
+
+
+// NEXT DOMANDA
+function nextQuestion() {
+
+    current++;
+
+    if (current < quizQuestions.length) {
+
+        showQuestion();
+
+    } else {
+
+        showResult();
+
+    }
 
 }
 
 
+// RISULTATO FINALE
+function showResult() {
 
-function showQuestion(){
+    let background = "";
+    let message = "";
 
-    selectedAnswer = null
+    if (correctCount >= 28) {
 
-    const q = questions[currentQuestion]
+        background = "#4CAF50";
 
-    app.innerHTML = `
-    <div class="screen center-screen">
+        message = `
+        🎉 Complimenti! 🎉<br><br>
+        Hai superato il test con un ottimo risultato.<br>
+        Sei decisamente preparato!
+        `;
 
-        <h2>${q.question}</h2>
+    } else if (correctCount >= 23) {
 
-        <div id="answers" class="answers"></div>
+        background = "#ff9800";
 
-        <div class="next-container">
-            <button id="nextBtn">Next</button>
+        message = `
+        👍 Buon lavoro!<br><br>
+        Sei vicino alla preparazione completa.<br>
+        Un piccolo ripasso e sarai pronto!
+        `;
+
+    } else {
+
+        background = "#f44336";
+
+        message = `
+        📚 Continua a studiare!<br><br>
+        Ripassa gli argomenti e riprova il test.
+        `;
+
+    }
+
+    quizContainer.innerHTML = `
+        <div id="resultScreen" style="background:${background}">
+            <h2>Risultato finale</h2>
+            <h1>${correctCount} / ${quizQuestions.length}</h1>
+            <p>${message}</p>
+            <button id="restartBtn">Rifai il quiz</button>
         </div>
+    `;
 
-    </div>
-    `
+    scoreDisplay.innerHTML = "";
 
-    const answersDiv = document.getElementById("answers")
-
-    q.answers.forEach((answer,index)=>{
-
-        const btn = document.createElement("button")
-        btn.className = "answer-btn"
-        btn.textContent = answer
-
-        btn.addEventListener("click",()=>{
-
-            selectedAnswer = index
-
-            document.querySelectorAll(".answer-btn").forEach(b=>b.style.background="white")
-
-            btn.style.background="#cce5ff"
-
-        })
-
-        answersDiv.appendChild(btn)
-
-    })
-
-    document.getElementById("nextBtn").addEventListener("click", nextQuestion)
+    document.getElementById("restartBtn").addEventListener("click", () => {
+        location.reload();
+    });
 
 }
 
 
+// TIMER
+function startTimer(correctIndex) {
 
-function nextQuestion(){
+    let time = TIME_PER_QUESTION;
 
-    if(selectedAnswer === null){
-        alert("Seleziona una risposta")
-        return
-    }
+    const timerElem = document.getElementById("timer");
+    const bar = document.getElementById("timeBar");
 
-    const q = questions[currentQuestion]
+    timerElem.textContent = "Tempo: " + time;
+    bar.style.width = "100%";
 
-    if(selectedAnswer === q.correct){
-        score++
-    }
+    timerInterval = setInterval(() => {
 
-    currentQuestion++
+        time--;
 
-    if(currentQuestion >= questions.length){
-        showResult()
-    }else{
-        showQuestion()
-    }
+        timerElem.textContent = "Tempo: " + time;
+        bar.style.width = (time / TIME_PER_QUESTION * 100) + "%";
 
+        if (time <= 0) {
+
+            stopTimer();
+            autoFail(correctIndex);
+
+        }
+
+    }, 1000);
 }
 
 
+// TEMPO SCADUTO
+function autoFail(correctIndex) {
 
-function showResult(){
+    const buttons = document.querySelectorAll(".option");
 
-    app.innerHTML = `
-    <div class="screen center-screen">
+    buttons.forEach((btn, i) => {
 
-        <h2>Risultato</h2>
+        btn.style.pointerEvents = "none";
 
-        <div class="result">
-            ${score} / ${questions.length}
-        </div>
+        if (i === correctIndex) {
+            btn.classList.add("correct");
+        }
 
-        <button id="restartBtn">Ricomincia</button>
+    });
 
-    </div>
-    `
-
-    document.getElementById("restartBtn").addEventListener("click", showStartScreen)
-
+    document.getElementById("nextBtn").style.display = "block";
 }
 
 
+// STOP TIMER
+function stopTimer() {
+    clearInterval(timerInterval);
+}
 
-showStartScreen()
+
+// CONTATORE RISPOSTE
+function updateScore() {
+    scoreDisplay.textContent = `Corrette: ${correctCount} / ${quizQuestions.length}`;
+}
