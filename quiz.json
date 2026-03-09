@@ -45,7 +45,7 @@
     "options": [
       "sostanze che aumentano l’efficacia delle sostanze attive e ne favoriscono la distribuzione;",
       "sostanze che riducono l'efficacia di un prodotto fitosanitario;",
-      "sostanze che riducono il tempo di sicurezza; 2"
+      "sostanze che riducono il tempo di sicurezza;"
     ],
     "correct": 0
   },
@@ -115,7 +115,7 @@
     "options": [
       "a combattere gli insetti e acari dannosi alle colture;",
       "ad eliminare il danno causato sulle colture dagli insetti;",
-      "a combattere gli insetti dannosi alle colture; 3"
+      "a combattere gli insetti dannosi alle colture;"
     ],
     "correct": 2
   },
@@ -195,7 +195,7 @@
     "options": [
       "sì, per definire l’epoca di intervento in relazione al prodotto impiegato;",
       "no, non influisce sull’effetto del trattamento;",
-      "sì, perché gli insetticidi agiscono solo sulle larve e non sugli altri stadi di sviluppo; 4"
+      "sì, perché gli insetticidi agiscono solo sulle larve e non sugli altri stadi di sviluppo;"
     ],
     "correct": 0
   },
@@ -265,7 +265,7 @@
     "options": [
       "alla presenza di piante rinate della coltura precedente;",
       "a malerbe resistenti agli erbicidi impiegati, che si diffondono con il tempo;",
-      "a malerbe che soffocano la coltura; 5"
+      "a malerbe che soffocano la coltura;"
     ],
     "correct": 1
   },
@@ -335,7 +335,7 @@
     "options": [
       "nessuno, la loro efficacia non cambia;",
       "economici, in quanto diminuisce la quantità di prodotto che viene distribuita sulla coltura;",
-      "minore pericolosità per l'operatore e maggiore facilità nella preparazione della miscela; 6"
+      "minore pericolosità per l'operatore e maggiore facilità nella preparazione della miscela;"
     ],
     "correct": 2
   },
@@ -345,7 +345,7 @@
     "options": [
       "verificare in etichetta le registrazioni e le modalità di impiego;",
       "scegliere un prodotto sistemico perché se piove il trattamento è più efficace;",
-      "non occorrono particolari precauzioni purché il prodotto sia efficace; QUESTIONARIO COMPLETO Il corretto impiego dei prodotti fitosanitari Pag. 6 di 19"
+      "non occorrono particolari precauzioni purché il prodotto sia efficace;"
     ],
     "correct": 0
   },
@@ -405,7 +405,7 @@
     "options": [
       "10 anni;",
       "5 anni;",
-      "3 anni; 7"
+      "3 anni;"
     ],
     "correct": 1
   },
@@ -415,7 +415,7 @@
     "options": [
       "Per acquistare tutti i PF destinati ad un uso professionale;",
       "Per guidare trattrici dotate di cabine pressurizzate;",
-      "Per acquistare PF etichettati con il simbolo di pericolo T+ e l’indicazione di pericolo MOLTO TOSSICO; UNITÀ 2 - I metodi di difesa fitosanitaria"
+      "Per acquistare PF etichettati con il simbolo di pericolo T+ e l’indicazione di pericolo MOLTO TOSSICO;"
     ],
     "correct": 0
   },
@@ -445,7 +445,7 @@
     "options": [
       "sulla valutazione del costo dell’intervento fitosanitario rispetto al danno economico previsto;",
       "sull'esecuzione dei trattamenti a turni fissi in base dell'andamento climatico;",
-      "sulla presenza di una guida tecnica nell’ambito delle rivendite; ARI"
+      "sulla presenza di una guida tecnica nell’ambito delle rivendite;"
     ],
     "correct": 0
   },
@@ -463,7 +463,7 @@
     "id": 47,
     "question": "47. Cosa si intende per lotta integrata?",
     "options": [
-      "l’utilizzo di tutti i fattori e le tecniche di difesa disponibili ;",
+      "l’utilizzo di tutti i fattori e le tecniche di difesa disponibili;",
       "è l'utilizzo integrato di prodotti fitosanitari selettivi;",
       "è l’uso di antagonisti naturali per il contenimento degli organismi dannosi;"
     ],
@@ -475,7 +475,7 @@
     "options": [
       "l’ottenimento di produzioni di qualità nel rispetto del produttore, del consumatore e dell’ambiente;",
       "favorire la produzione di prodotti integrali;",
-      "incentivare, attraverso aiuti economici, la costituzione di aziende ad indirizzo misto zootecnico e fruttiviticolo; 8"
+      "incentivare, attraverso aiuti economici, la costituzione di aziende ad indirizzo misto zootecnico e fruttiviticolo;"
     ],
     "correct": 0
   },
@@ -505,7 +505,7 @@
     "options": [
       "una tecnica agricola in cui non si esegue mai nessun tipo di trattamento contro le avversità delle piante;",
       "una tecnica agricola in cui, per la difesa delle colture, si impiegano solo prodotti irritanti o non classificati;",
-      "un sistema di produzione compatibile con l’ambiente che per la difesa delle colture si basa sull’abolizione delle sostanze chimiche di sintesi; MODULO 2 - Gestione dei rischi associati ai prodotti fitosanitari UNITÀ 1 - Valutazione della pericolosità dei prodotti fitosanitari"
+      "un sistema di produzione compatibile con l’ambiente che per la difesa delle colture si basa sull’abolizione delle sostanze chimiche di sintesi;"
     ],
     "correct": 2
   },
@@ -525,7 +525,7 @@
     "options": [
       "la dose di aria satura di prodotto fitosanitario che viene somministrata a 50 animali da esperimento su un totale di 100, mentre ai rimanenti 50 animali viene somministrata dell’acqua satura di prodotto fitosanitario concentrato;",
       "la concentrazione in aria o acqua del prodotto che agisce allo stato di gas o di vapore e che ottiene lo stesso effetto della Dose Letale 50;",
-      "il 50 % del prodotto può essere letale; 9"
+      "il 50 % del prodotto può essere letale;"
     ],
     "correct": 1
   },
@@ -575,7 +575,7 @@
     "options": [
       "sono etichettati e contrassegnati con un teschio nero su ossa incrociate inserite in un quadrato rettangolare di colore giallo-arancio e la scritta “Irritante”;",
       "sono etichettati e contrassegnati con un pittogramma a forma di losanga con fondo bianco e bordo rosso contenente il simbolo della persona danneggiata di colore nero con avvertenza sottostante di pericolo;",
-      "con la sola scritta “Nocivo”, senza nessun contrassegno e disegno particolare; 10"
+      "con la sola scritta “Nocivo”, senza nessun contrassegno e disegno particolare;"
     ],
     "correct": 1
   },
@@ -625,7 +625,7 @@
     "options": [
       "sono etichettati e contrassegnati con un pittogramma a forma di losanga con fondo bianco e bordo rosso contenente una fiamma di colore nero con avvertenza sottostante di “Pericolo”;",
       "sono etichettati e contrassegnati con il simbolo di pericolo F, con fiamma nera in campo giallo arancione e l’indicazione di pericolo “Facilmente infiammabile”;",
-      "sono etichettati e contrassegnati con una croce di Sant'Andrea in un riquadro rettangolare di colore giallo-arancio e la scritta “Infiammabile”; 11"
+      "sono etichettati e contrassegnati con una croce di Sant'Andrea in un riquadro rettangolare di colore giallo-arancio e la scritta “Infiammabile”;"
     ],
     "correct": 0
   },
@@ -697,7 +697,7 @@
   },
   {
     "id": 71,
-    "question": "71. A cosa serve la scheda dei dati di sicurezza di un prodotto fitosanitario per un datore di lavoro? 12",
+    "question": "71. A cosa serve la scheda dei dati di sicurezza di un prodotto fitosanitario per un datore di lavoro?",
     "options": [
       "serve solo quando si impiegano prodotti molto tossici;",
       "serve prevalentemente per valutare il rischio da agenti chimici pericolosi e per scegliere le necessarie misure di prevenzione e protezione per l’uomo e l’ambiente;",
@@ -769,7 +769,7 @@
     "id": 78,
     "question": "78. Dovendo fare un trattamento su coltura ortiva a raccolta scalare:",
     "options": [
-      "bisogna rispettare i tempi di carenza soltanto per l'ultima raccolta; 13",
+      "bisogna rispettare i tempi di carenza soltanto per l'ultima raccolta;",
       "non bisogna rispettare i tempi di carenza in quanto la raccolta è scalare;",
       "bisogna sempre rispettare i tempi di carenza;"
     ],
@@ -811,7 +811,7 @@
     "options": [
       "almeno 48 ore;",
       "1 ora;",
-      "non è necessario aspettare tempo e rispettare nessuna misura protettiva in quanto in etichetta non è descritta nessuna precauzione; UNITÀ 2 Acquisto, trasporto, conservazione e impiego dei prodotti fitosanitari"
+      "non è necessario aspettare tempo e rispettare nessuna misura protettiva in quanto in etichetta non è descritta nessuna precauzione;"
     ],
     "correct": 0
   },
@@ -829,7 +829,7 @@
     "id": 84,
     "question": "84. Possono essere acquistati prodotti fitosanitari in confezioni non sigillate o non originali?",
     "options": [
-      "no, in nessun caso; 14",
+      "no, in nessun caso;",
       "sì, purché si tratti di prodotti registrati;",
       "sì, purché il rivenditore ne garantisca la provenienza;"
     ],
@@ -897,7 +897,7 @@
   },
   {
     "id": 91,
-    "question": "91. Quale deve essere il comportamento nel caso in cui le confezioni presenti nel locale adibito a magazzino dei prodotti fitosanitari si rompano e fuoriescano quantità anche minime di prodotto fitosanitario? 15",
+    "question": "91. Quale deve essere il comportamento nel caso in cui le confezioni presenti nel locale adibito a magazzino dei prodotti fitosanitari si rompano e fuoriescano quantità anche minime di prodotto fitosanitario?",
     "options": [
       "occorre lavare la superficie imbrattata con acqua e convogliare il residuo nella fognatura;",
       "occorre pulire immediatamente le superfici imbrattate, raccogliere il prodotto, se liquido, con materiale assorbente quale segatura o sabbia per impedire che il prodotto finisca nella fognatura e smaltire il rifiuto secondo le norme vigenti;",
@@ -969,7 +969,7 @@
     "id": 98,
     "question": "98. Esiste un divieto legale d’impiego dei prodotti fitosanitari in aree di rispetto intorno a pozzi o sorgenti di acque destinate al consumo umano?",
     "options": [
-      "sì, entro un raggio di 200 metri 16",
+      "sì, entro un raggio di 200 metri",
       "no",
       "sì, entro un raggio di 50 metri, salvo deroghe specifiche"
     ],
@@ -1021,7 +1021,7 @@
     "options": [
       "fare meno trattamenti poiché aumenta notevolmente l’efficienza dell’attrezzatura;",
       "ridurre i tempi necessari per i trattamenti poiché si utilizzano minori quantità d’acqua;",
-      "ridurre gli effetti negativi sulla salute e l’ambiente e migliorare l'efficacia dei trattamenti; 17"
+      "ridurre gli effetti negativi sulla salute e l’ambiente e migliorare l'efficacia dei trattamenti;"
     ],
     "correct": 2
   },
@@ -1081,7 +1081,7 @@
     "options": [
       "Abbandonare in un cassetto della spazzatura i PF appena acquistati per non correre rischi;",
       "Avvisare le autorità competenti, quali il Comando Carabinieri politiche agricole;",
-      "Smaltire correttamente le confezioni sospette; UNITÀ 3 - Effetti sulla salute e modalità di prevenzione"
+      "Smaltire correttamente le confezioni sospette;"
     ],
     "correct": 1
   },
@@ -1091,7 +1091,7 @@
     "options": [
       "solo intossicazione acuta;",
       "intossicazione acuta, cronica ed allo sviluppo di malattie allergiche;",
-      "solo intossicazione cronica ed allo sviluppo di malattie allergiche; 18"
+      "solo intossicazione cronica ed allo sviluppo di malattie allergiche;"
     ],
     "correct": 1
   },
@@ -1151,7 +1151,7 @@
     "options": [
       "lavare l'intossicato con acqua e somministrare una bevanda calda;",
       "mettere a letto il soggetto, chiamare il medico curante facendogli vedere il luogo dell’intossicazione;",
-      "chiamare il 118, trasportare l’intossicato lontano dal luogo della contaminazione, spogliarlo e lavarlo con acqua e non somministrare alcuna bevanda; 19"
+      "chiamare il 118, trasportare l’intossicato lontano dal luogo della contaminazione, spogliarlo e lavarlo con acqua e non somministrare alcuna bevanda;"
     ],
     "correct": 2
   },
@@ -1211,7 +1211,7 @@
     "options": [
       "tuta Tipo 3, 4, 5, 6;",
       "tuta Tipo 5 e 6;",
-      "tuta Tipo 6; QUESTIONARIO COMPLETO dei prodotti fitosanitari Pag. 15 di 19"
+      "tuta Tipo 6;"
     ],
     "correct": 0
   },
@@ -1221,7 +1221,7 @@
     "options": [
       "1 A categoria;",
       "2 A categoria;",
-      "3 A categoria; 20"
+      "3 A categoria;"
     ],
     "correct": 2
   },
@@ -1291,13 +1291,13 @@
     "options": [
       "va lavata dopo l'uso, separando il filtro che va sostituito frequentemente, seguendo le indicazioni del costruttore;",
       "va revisionata almeno una volta all'anno presso il rivenditore autorizzato che rilascia sempre un attestato di conformità CE;",
-      "va lavata con acqua e sapone dopo l'uso; 21"
+      "va lavata con acqua e sapone dopo l'uso;"
     ],
     "correct": 0
   },
   {
     "id": 131,
-    "question": "131. Per quale categoria di dispositivi di protezione individuale (DPI) è obbligatoria la formazione dei lavoratori ?",
+    "question": "131. Per quale categoria di dispositivi di protezione individuale (DPI) è obbligatoria la formazione dei lavoratori?",
     "options": [
       "solo per i DPI di 3 A categoria;",
       "per i DPI per l’udito e di 3 A categoria;",
@@ -1361,7 +1361,7 @@
     "options": [
       "sì, nel caso di un prodotto fitosanitario di pari efficacia fitosanitaria;",
       "no, se è un prodotto fitosanitario che usano tutte le aziende agricole;",
-      "sì, solo se è descritto nella scheda di sicurezza; 22"
+      "sì, solo se è descritto nella scheda di sicurezza;"
     ],
     "correct": 0
   },
@@ -1423,7 +1423,7 @@
     "options": [
       "chi non ha cambiato il filtro del DPI e si è dimenticato di leggere attentamente la nota informativa;",
       "chi ha venduto il prodotto fitosanitario e non ha rilasciato un attestato di conformità CE, la nota informativa e una dichiarazione di conformità CE;",
-      "il datore di lavoro che ha acquistato il prodotto fitosanitario e chi, pur informato, formato ed addestrato, ha utilizzato scorrettamente il DPI; 23"
+      "il datore di lavoro che ha acquistato il prodotto fitosanitario e chi, pur informato, formato ed addestrato, ha utilizzato scorrettamente il DPI;"
     ],
     "correct": 2
   },
@@ -1489,7 +1489,7 @@
     "options": [
       "chiunque sia l’utilizzatore dei prodotti fitosanitari",
       "il titolare dell’azienda agricola",
-      "il rivenditore di prodotti fitosanitari 24 MODULO 3 - Strategie di sostenibilità ambientale UNITÀ 1 - I rischi e le precauzioni per l’ambiente"
+      "il rivenditore di prodotti fitosanitari"
     ],
     "correct": 0
   },
@@ -1559,7 +1559,7 @@
     "options": [
       "immessi nei cassonetti dei rifiuti urbani avvisando l'azienda municipale dell'igiene urbana;",
       "distruggerli, bruciandoli o interrandoli, e darne comunicazione all'Unità Sanitaria Locale e all’ARPA;",
-      "bonificarli e conferirli alle stazioni ecologiche appositamente attrezzate; 25"
+      "bonificarli e conferirli alle stazioni ecologiche appositamente attrezzate;"
     ],
     "correct": 2
   },
@@ -1628,7 +1628,7 @@
     "question": "165. Quali sono le modalità attraverso le quali i prodotti fitosanitari si disperdono nell’ambiente?",
     "options": [
       "Deriva, volatilità, ruscellamento e lisciviazione;",
-      "Contatto, asfissia e ingestione; 26",
+      "Contatto, asfissia e ingestione;",
       "Attraverso la bruciatura dei contenitori vuoti non bonificati;"
     ],
     "correct": 0
@@ -1649,7 +1649,7 @@
     "options": [
       "Rispettare scrupolosamente eventuali vincoli applicativi riportati in etichetta;",
       "Utilizzare i prodotti insetticidi alla dose più bassa riportata in etichetta durante la fioritura;",
-      "Dare la preferenza ai prodotti di copertura; UNITÀ 2 Tutela della biodiversità in aree protette"
+      "Dare la preferenza ai prodotti di copertura;"
     ],
     "correct": 0
   },
@@ -1688,7 +1688,7 @@
     "question": "171. Quali sono i Siti che formano la Rete Natura 2000?",
     "options": [
       "Le Zone Speciali di Conservazione (ZSC), ora ancora SIC e le Zone di Protezione Speciale (ZPS);",
-      "Le Zone Speciali di Conservazione (ZSC), ora ancora SIC e le Zone di Protezione Speciale (ZPS) e le riserve naturali; 27",
+      "Le Zone Speciali di Conservazione (ZSC), ora ancora SIC e le Zone di Protezione Speciale (ZPS) e le riserve naturali;",
       "Le Zone Speciali di Conservazione (ZSC), ora ancora SIC e le Zone di Protezione Speciale (ZPS) e i Parchi Regionali e Nazionali;"
     ],
     "correct": 0
