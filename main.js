@@ -30,11 +30,13 @@ async function startQuiz() {
         isReviewMode = false;
         showQuestion();
     } catch (e) {
-        alert("Errore caricamento dati.");
+        alert("Errore nel caricamento dei dati.");
     }
 }
 
-function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
 
 function showQuestion() {
     const questionsList = isReviewMode ? wrongQuestions : quizQuestions;
@@ -44,13 +46,19 @@ function showQuestion() {
     quizContainer.innerHTML = `
         <div class="quiz-screen">
             ${!isReviewMode ? '<div id="timeBarContainer"><div id="timeBar"></div></div>' : ''}
+            <div style="text-align:center; font-size:13px; color:#666; margin-bottom:10px; font-weight:bold;">
+                ${isReviewMode ? `RECUPERO ERRORE ${current + 1} DI ${questionsList.length}` : `DOMANDA ${current + 1} DI 25`}
+            </div>
             <div class="question">${q.question}</div>
             <div class="answers">
-                ${q.options.map((opt, i) => `<div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>`).join('')}
+                ${q.options.map((opt, i) => `
+                    <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
+                `).join('')}
             </div>
             <button id="nextBtn" class="btn-ersa" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
+
     if (!isReviewMode) startTimer(correctIndex);
 }
 
@@ -58,6 +66,7 @@ function checkAnswer(selected, correct) {
     if (!isReviewMode) stopTimer();
     const options = document.querySelectorAll(".option");
     options.forEach(opt => opt.style.pointerEvents = "none");
+
     if (selected === correct) {
         options[selected].classList.add("correct");
         if (!isReviewMode) correctCount++;
@@ -82,20 +91,53 @@ function nextQuestion() {
     }
 }
 
-function showResults(total) {
+function showResults(totalInRound) {
     quizContainer.style.display = "none";
     scoreDisplay.style.display = "flex";
-    let scoreText = isReviewMode ? `${total - wrongQuestions.length} / ${total}` : `${correctCount} / 25`;
-    let bgClass = (correctCount >= 21) ? "bg-pass" : "bg-fail";
+
+    let bgClass = "";
+    let title = "";
+    let message = "";
+    let scoreText = "";
+
+    if (!isReviewMode) {
+        scoreText = `${correctCount} / 25`;
+        if (correctCount >= 24) {
+            bgClass = "bg-pass"; title = "Esame Superato";
+            message = "Complimenti! La tua preparazione è eccellente. Sei pronto per l'esame ufficiale!";
+        } else if (correctCount >= 21) {
+            bgClass = "bg-oral"; title = "Esame Superato*";
+            message = "Buon lavoro! Hai superato la prova, ma non abbassare la guardia: un ultimo sforzo per l'orale!";
+        } else {
+            bgClass = "bg-fail"; title = "Esame Non Superato";
+            message = "Non scoraggiarti! L'agricoltura richiede pazienza e dedizione. Rivedi i tuoi errori e riprova!";
+        }
+    } else {
+        const correctsInReview = totalInRound - wrongQuestions.length;
+        scoreText = `${correctsInReview} / ${totalInRound}`;
+        if (wrongQuestions.length === 0) {
+            bgClass = "bg-pass"; title = "Recupero Completato";
+            message = "Ottimo! Hai corretto ogni incertezza.";
+        } else {
+            bgClass = "bg-fail"; title = "Recupero Incompleto";
+            message = "Stai andando bene! Alcuni concetti sono ostici, riprova ancora.";
+        }
+    }
+
+    const reviewBtnHtml = wrongQuestions.length > 0 
+        ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
+        : "";
 
     scoreDisplay.innerHTML = `
         <div class="result-container">
+            <div style="font-size: 24px; font-weight: bold; color: #2e7d32; margin-bottom: 20px;">${title}</div>
             <div class="score-box ${bgClass}">
-                <h2 style="font-size:50px;">${scoreText}</h2>
-                <p>Esercitazione Conclusa</p>
+                <h2>${scoreText}</h2>
+                <p style="font-style: italic; font-weight: bold;">${message}</p>
+                ${!isReviewMode && correctCount < 21 ? '<p style="font-size: 14px; opacity: 0.8; margin-top:10px;">Ricorda: hai due tentativi prima di dover ripresentare domanda.</p>' : ''}
             </div>
-            ${wrongQuestions.length > 0 ? `<button class="btn-ersa" style="background-color:#1565c0 !important; margin-bottom:10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` : ''}
-            <button class="btn-ersa" onclick="location.reload()">Riprova</button>
+            ${reviewBtnHtml}
+            <button class="btn-ersa" onclick="location.reload()">Riprova l'esercitazione</button>
         </div>
     `;
 }
@@ -119,33 +161,24 @@ function startTimer(correctIndex) {
 
 function stopTimer() { clearInterval(timerInterval); }
 
-// --- LOGICA PWA (Servive Worker + Installazione) ---
-
+// --- PWA E INSTALLAZIONE ---
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
-    });
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
 }
 
-// RILEVA IPHONE PER ISTRUZIONI
+// Rileva iPhone
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-if (isIos && !isStandalone) {
-    document.getElementById('ios-info').style.display = 'block';
-}
+if (isIos && !isStandalone) { document.getElementById('ios-info').style.display = 'block'; }
 
-// LOGICA ANDROID ORIGINALE
+// Android Originale
 let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
 window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.style.display = 'block';
+    e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
 });
 installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt = null;
-        installBtn.style.display = 'none';
+        deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none';
     }
 });
