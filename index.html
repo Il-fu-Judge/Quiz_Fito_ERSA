@@ -5,17 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Esercitazione Patentino Fitosanitari ERSA</title>
-    
+
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2e7d32">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
+    <meta name="theme-color" content="#2e7d32">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <style>
-        /* RESET E BASE MOBILE-FRIENDLY */
+        /* RESET E BASE */
         html, body {
-            height: 100%; /* Più stabile di vh su mobile */
+            height: 100%;
             margin: 0;
             padding: 0;
             font-family: Arial, Helvetica, sans-serif;
@@ -23,16 +23,11 @@
             color: #333;
         }
 
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        body { display: flex; justify-content: center; align-items: center; }
 
         #app {
             max-width: 600px;
             width: 100%;
-            /* Utilizziamo min-height invece di altezza fissa per evitare sparizioni */
             min-height: 100%; 
             display: flex;
             flex-direction: column;
@@ -41,7 +36,6 @@
             position: relative;
         }
 
-        /* PULSANTI ERSA - Grandi, Verdi, Testo Bianco */
         .btn-ersa {
             background-color: #2e7d32 !important;
             color: white !important;
@@ -56,12 +50,25 @@
             display: block;
             box-sizing: border-box;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            -webkit-appearance: none; /* Rimuove stili iOS di default */
+            margin-bottom: 10px;
+        }
+
+        /* BOX ISTRUZIONI iOS */
+        #ios-instruction {
+            display: none;
+            background: white;
+            border: 2px solid #2e7d32;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         /* SCHERMATA INIZIALE */
         .start-screen {
-            flex-grow: 1; /* Prende tutto lo spazio per centrare */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -73,39 +80,11 @@
         .subtitle { font-size: 18px; color: #555; margin-bottom: 30px; }
         .source-info { font-size: 13px; color: #888; margin-top: 20px; }
 
-        /* QUIZ SCREEN - Centratura Verticale */
-        .quiz-screen {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        /* QUIZ SCREEN */
+        .question { font-size: 20px; font-weight: bold; margin-bottom: 25px; text-align: center; }
+        #timeBarContainer { width: 100%; height: 10px; background: #ddd; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        #timeBar { height: 100%; width: 100%; background: #2e7d32; transition: width 1s linear; }
 
-        .question {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            line-height: 1.4;
-            text-align: center;
-        }
-
-        /* TIMER E PROGRESSO */
-        #timeBarContainer {
-            width: 100%;
-            height: 10px;
-            background: #ddd;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        #timeBar {
-            height: 100%;
-            width: 100%;
-            background: #2e7d32;
-            transition: width 1s linear;
-        }
-
-        /* OPZIONI RISPOSTA */
         .option {
             border: 2px solid #2e7d32;
             border-radius: 10px;
@@ -114,58 +93,21 @@
             font-size: 18px;
             background: white;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent; /* Rimuove il flash blu su mobile */
         }
         .option.correct { background: #2e7d32 !important; color: white !important; }
         .option.wrong { background: #b71c1c !important; color: white !important; border-color: #b71c1c !important; }
 
-        /* TASTO AVANTI STICKY ERGONOMICO */
         #nextBtn {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 560px;
-            display: none;
-            z-index: 100;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 40px); max-width: 560px; display: none; z-index: 100;
         }
 
         /* RISULTATI */
-        .result-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .result-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2e7d32;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-
-        .score-box {
-            width: 100%;
-            padding: 30px 20px;
-            border-radius: 20px;
-            color: white;
-            margin-bottom: 25px;
-            box-sizing: border-box;
-        }
-
-        .score-box h2 { font-size: 50px; margin: 0; }
-        .score-box p { font-size: 17px; margin-top: 12px; line-height: 1.4; }
-
-        /* COLORI BOX RISULTATI */
+        .result-container { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .score-box { width: 100%; padding: 30px 20px; border-radius: 20px; color: white; margin-bottom: 25px; box-sizing: border-box; }
         .bg-pass { background-color: #2e7d32; }
         .bg-oral { background-color: #ff9800; }
         .bg-fail { background-color: #b71c1c; }
-
     </style>
 </head>
 
@@ -174,7 +116,17 @@
         <div id="start-screen" class="start-screen">
             <h1>Patentino Fitosanitario</h1>
             <p class="subtitle">Esercitazione per il rilascio del certificato di abilitazione.</p>
+            
             <button id="start-btn" class="btn-ersa">Inizia l'esercitazione</button>
+            
+            <button id="install-pwa-btn" class="btn-ersa" style="display:none; background-color: #555 !important;" onclick="installPWA()">Installa App sul telefono</button>
+            
+            <div id="ios-instruction">
+                <p style="margin: 0 0 10px 0; font-weight: bold; color: #2e7d32;">📲 Aggiungi alla Home (iPhone):</p>
+                1. Tocca l'icona <strong>Condividi</strong> <img src="https://img.icons8.com/ios/20/000000/safari-export.png" style="vertical-align: middle;"> in basso.<br>
+                2. Seleziona <strong>"Aggiungi alla schermata Home"</strong>.
+            </div>
+
             <p class="source-info">Fonte: ERSA • Aggiornato 2026</p>
         </div>
 
