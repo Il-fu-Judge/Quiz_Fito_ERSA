@@ -7,15 +7,15 @@
     <title>Esercitazione Patentino Fitosanitari ERSA</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2e7d32">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2e7d32">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <style>
-        /* RESET E BASE */
+        /* RESET E BASE MOBILE-FRIENDLY */
         html, body {
-            height: 100%;
+            height: 100%; /* Più stabile di vh su mobile */
             margin: 0;
             padding: 0;
             font-family: Arial, Helvetica, sans-serif;
@@ -32,6 +32,7 @@
         #app {
             max-width: 600px;
             width: 100%;
+            /* Utilizziamo min-height invece di altezza fissa per evitare sparizioni */
             min-height: 100%; 
             display: flex;
             flex-direction: column;
@@ -40,6 +41,7 @@
             position: relative;
         }
 
+        /* PULSANTI ERSA - Grandi, Verdi, Testo Bianco */
         .btn-ersa {
             background-color: #2e7d32 !important;
             color: white !important;
@@ -54,39 +56,12 @@
             display: block;
             box-sizing: border-box;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            -webkit-appearance: none;
+            -webkit-appearance: none; /* Rimuove stili iOS di default */
         }
 
-        /* SCHERMATA BLOCO CODICE */
-        #auth-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #f5f7f5;
-            z-index: 10000;
-            display: none; /* Gestito da JS */
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        #access-code {
-            width: 100%;
-            max-width: 300px;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 10px;
-            border: 2px solid #2e7d32;
-            font-size: 18px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        /* QUIZ SCREEN */
+        /* SCHERMATA INIZIALE */
         .start-screen {
-            flex-grow: 1;
+            flex-grow: 1; /* Prende tutto lo spazio per centrare */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -96,7 +71,25 @@
 
         h1 { font-size: 26px; color: #2e7d32; margin-bottom: 10px; }
         .subtitle { font-size: 18px; color: #555; margin-bottom: 30px; }
+        .source-info { font-size: 13px; color: #888; margin-top: 20px; }
 
+        /* QUIZ SCREEN - Centratura Verticale */
+        .quiz-screen {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* TIMER E PROGRESSO */
         #timeBarContainer {
             width: 100%;
             height: 10px;
@@ -112,8 +105,7 @@
             transition: width 1s linear;
         }
 
-        .question { font-size: 20px; font-weight: bold; margin-bottom: 25px; text-align: center; line-height: 1.4; }
-
+        /* OPZIONI RISPOSTA */
         .option {
             border: 2px solid #2e7d32;
             border-radius: 10px;
@@ -122,13 +114,16 @@
             font-size: 18px;
             background: white;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent; /* Rimuove il flash blu su mobile */
         }
-        .option.correct { background: #2e7d32 !important; color: white !important; border-color: #2e7d32 !important; }
+        .option.correct { background: #2e7d32 !important; color: white !important; }
         .option.wrong { background: #b71c1c !important; color: white !important; border-color: #b71c1c !important; }
 
+        /* TASTO AVANTI STICKY ERGONOMICO */
         #nextBtn {
-            position: fixed; bottom: 20px; left: 50%;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
             transform: translateX(-50%);
             width: calc(100% - 40px);
             max-width: 560px;
@@ -136,7 +131,23 @@
             z-index: 100;
         }
 
-        .result-title { font-size: 24px; font-weight: bold; color: #2e7d32; margin-bottom: 20px; text-transform: uppercase; }
+        /* RISULTATI */
+        .result-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
 
         .score-box {
             width: 100%;
@@ -146,46 +157,28 @@
             margin-bottom: 25px;
             box-sizing: border-box;
         }
+
         .score-box h2 { font-size: 50px; margin: 0; }
         .score-box p { font-size: 17px; margin-top: 12px; line-height: 1.4; }
 
+        /* COLORI BOX RISULTATI */
         .bg-pass { background-color: #2e7d32; }
         .bg-oral { background-color: #ff9800; }
         .bg-fail { background-color: #b71c1c; }
 
-        #ios-info {
-            display: none;
-            background: white;
-            border: 2px solid #1565c0;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            text-align: left;
-        }
     </style>
 </head>
 
 <body>
-    <div id="auth-overlay">
-        <h1 style="color: #2e7d32;">Accesso Riservato</h1>
-        <p>Inserisci il codice per sbloccare l'esercitazione.</p>
-        <input type="text" id="access-code" placeholder="CODICE">
-        <button class="btn-ersa" style="max-width: 300px;" onclick="validateCode()">SBLOCCA</button>
-    </div>
-
     <div id="app">
         <div id="start-screen" class="start-screen">
             <h1>Patentino Fitosanitario</h1>
             <p class="subtitle">Esercitazione per il rilascio del certificato di abilitazione.</p>
             
-            <div id="ios-info">
-                <strong>📲 Installa su iPhone:</strong><br>
-                Tocca l'icona <strong>Condividi</strong> e seleziona <strong>"Aggiungi alla schermata Home"</strong>.
-            </div>
-
             <button id="install-btn" class="btn-ersa" style="display:none; background-color: #1565c0 !important; margin-bottom: 15px;">Installa App Android</button>
+            
             <button id="start-btn" class="btn-ersa">Inizia l'esercitazione</button>
+            <p class="source-info">Fonte: ERSA • Aggiornato 2026</p>
         </div>
 
         <div id="quiz-container" style="display:none; flex-grow: 1;"></div>
