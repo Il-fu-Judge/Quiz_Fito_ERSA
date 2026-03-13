@@ -101,7 +101,7 @@ function showResults() {
     } else {
         bgClass = "bg-fail";
         title = "Esame Non Superato";
-        message = "Documentazione da rifare se i tentativi ERSA sono esauriti.";
+        message = "La documentazione presentata è valida per due tentativi d'esame. In caso di esito negativo in entrambe le prove, sarà necessario presentare una nuova istanza e riconsegnare i documenti.";
     }
 
     scoreDisplay.innerHTML = `
