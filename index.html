@@ -105,6 +105,33 @@
             transition: width 1s linear;
         }
 
+        /* OVERLAY DI BLOCCO */
+        #auth-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #f5f7f5;
+            z-index: 10000;
+            display: none; /* Gestito da JS */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        #access-code {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #2e7d32;
+            font-size: 18px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
         /* OPZIONI RISPOSTA */
         .option {
             border: 2px solid #2e7d32;
@@ -170,6 +197,12 @@
 </head>
 
 <body>
+    <div id="auth-overlay">
+        <h1 style="color: #2e7d32;">Accesso Riservato</h1>
+        <p>Inserisci il codice univoco per sbloccare l'esercitazione.</p>
+        <input type="text" id="access-code" placeholder="INSERISCI CODICE">
+        <button class="btn-ersa" style="max-width: 300px;" onclick="validateCode()">SBLOCCA</button>
+    </div>
     <div id="app">
         <div id="start-screen" class="start-screen">
             <h1>Patentino Fitosanitario</h1>
