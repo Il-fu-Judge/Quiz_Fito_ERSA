@@ -7,7 +7,7 @@ let current = 0;
 let correctCount = 0;
 let timerInterval;
 let isReviewMode = false;
-let totalQuestionsInReview = 0; // Per calcolare il punteggio nel recupero
+let totalQuestionsInReview = 0;
 
 const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
@@ -76,8 +76,6 @@ function checkAnswer(selected, correct) {
     } else {
         if (selected !== -1) options[selected].classList.add("wrong");
         options[correct].classList.add("correct");
-        
-        // Salva la domanda per il prossimo round di revisione
         currentWrongAttempts.push(isReviewMode ? wrongQuestions[current] : quizQuestions[current]);
     }
     document.getElementById("nextBtn").style.display = "block";
@@ -102,51 +100,30 @@ function showResults(totalAttemptedInRound) {
     scoreDisplay.style.display = "flex";
 
     let bgClass = "";
-    let title = "";
-    let message = "";
     let scoreText = "";
 
     if (!isReviewMode) {
-        // --- RISULTATI QUIZ PRINCIPALE ---
         scoreText = `${correctCount} / 25`;
-        if (correctCount >= 24) {
-            bgClass = "bg-pass"; title = "Esame Superato";
-            message = "Complimenti! La tua preparazione è eccellente. Sei pronto per l'esame ufficiale!";
-        } else if (correctCount >= 21) {
-            bgClass = "bg-oral"; title = "Esame Superato*";
-            message = "Buon lavoro! Hai superato la prova, ma non abbassare la guardia: un ultimo sforzo per l'orale!";
-        } else {
-            bgClass = "bg-fail"; title = "Esame Non Superato";
-            message = "Non scoraggiarti! L'agricoltura richiede pazienza e dedizione. Rivedi i tuoi errori e riprova, ce la farai!";
-        }
-    } else {
-        // --- RISULTATI RECUPERO ERRORI ---
-        const correctsInReview = totalAttemptedInRound - wrongQuestions.length;
-        scoreText = `${correctsInReview} / ${totalAttemptedInRound}`;
-
-        if (wrongQuestions.length === 0) {
-            bgClass = "bg-pass";
-            title = "Recupero Completato";
-            message = "Ottimo! Hai corretto ogni incertezza. Ogni errore affrontato è una lezione imparata per sempre!";
+        if (correctCount >= 21) {
+            bgClass = (correctCount >= 24) ? "bg-pass" : "bg-oral";
         } else {
             bgClass = "bg-fail";
-            title = "Recupero Incompleto";
-            message = "Stai andando bene! Alcuni concetti sono ostici, ma affrontandoli uno ad uno diventerai un esperto.";
         }
+    } else {
+        const correctsInReview = totalAttemptedInRound - wrongQuestions.length;
+        scoreText = `${correctsInReview} / ${totalAttemptedInRound}`;
+        bgClass = (wrongQuestions.length === 0) ? "bg-pass" : "bg-fail";
     }
 
-    // PULSANTE RIVEDI ERRORI - Ora usa lo stesso blu dell'installazione (#1565c0)
     const reviewBtnHtml = wrongQuestions.length > 0 
         ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
         : "";
 
     scoreDisplay.innerHTML = `
         <div class="result-container">
-            <div class="result-title">${title}</div>
-            <div class="score-box ${bgClass}">
+            <div class=\"score-box ${bgClass}\">
                 <h2>${scoreText}</h2>
-                <p style="font-style: italic; font-weight: bold; margin-bottom: 15px;">${message}</p>
-                ${!isReviewMode && correctCount < 21 ? `<p style="font-size: 14px; opacity: 0.9;">Ricorda: la documentazione è valida per due tentativi d'esame. Se necessario, dovrai ripresentare la domanda.</p>` : ''}
+                <p style=\"font-weight: bold; margin-top: 10px;\">Esercitazione conclusa</p>
             </div>
             ${reviewBtnHtml}
             <button class="btn-ersa" onclick="location.reload()">Riprova l'esercitazione</button>
@@ -178,13 +155,21 @@ function stopTimer() { clearInterval(timerInterval); }
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('PWA: Service Worker registrato correttamente'))
-            .catch(err => console.log('PWA: Errore registrazione', err));
+        navigator.serviceWorker.register('sw.js');
     });
 }
 
-// --- GESTIONE INSTALLAZIONE ANDROID ---
+// --- LOGICA SPECIFICA INSTALLAZIONE ---
+
+// 1. Rileva iPhone (mostra messaggio istruzioni)
+const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+if (isIos && !isStandalone) {
+    document.getElementById('ios-info').style.display = 'block';
+}
+
+// 2. Gestione Android (Pulsante Blu già presente)
 let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
 
@@ -197,14 +182,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
         deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to install prompt: ${outcome}`);
         deferredPrompt = null;
         installBtn.style.display = 'none';
     }
-});
-
-window.addEventListener('appinstalled', () => {
-    console.log('App installata!');
-    installBtn.style.display = 'none';
 });
