@@ -14,9 +14,8 @@ const startScreen = document.getElementById("start-screen");
 const scoreDisplay = document.getElementById("score");
 const authOverlay = document.getElementById("auth-overlay");
 
-// --- LOGICA DI ACCESSO (LOCK) ---
-
-function checkInitialAccess() {
+// --- LOGICA ACCESSO ---
+function checkAuth() {
     if (localStorage.getItem("isAuthorized") === "true") {
         authOverlay.style.display = "none";
     } else {
@@ -26,12 +25,11 @@ function checkInitialAccess() {
 
 async function validateCode() {
     const input = document.getElementById("access-code").value.trim().toUpperCase();
-    if (!input) return alert("Inserisci un codice.");
+    if (!input) { alert("Inserisci un codice."); return; }
 
     try {
         const response = await fetch("codes.json");
         const validCodes = await response.json();
-
         if (validCodes.includes(input)) {
             localStorage.setItem("isAuthorized", "true");
             authOverlay.style.display = "none";
@@ -39,15 +37,13 @@ async function validateCode() {
             alert("Codice non valido.");
         }
     } catch (e) {
-        alert("Errore nel caricamento dei codici. Verifica il file codes.json.");
+        alert("Errore: il file codes.json non è leggibile.");
     }
 }
 
-// Esegui subito il controllo all'apertura
-checkInitialAccess();
+checkAuth();
 
-// --- LOGICA QUIZ ORIGINALE ---
-
+// --- LOGICA QUIZ ---
 startBtn.addEventListener("click", startQuiz);
 
 async function startQuiz() {
@@ -56,18 +52,16 @@ async function startQuiz() {
         allQuestions = await res.json();
         const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
         quizQuestions = shuffle(availableQuestions).slice(0, 25);
-
         startScreen.style.display = "none";
         quizContainer.style.display = "flex";
         scoreDisplay.style.display = "none";
-        
         current = 0;
         correctCount = 0;
         wrongQuestions = [];
         isReviewMode = false;
         showQuestion();
     } catch (e) {
-        alert("Errore nel caricamento dei dati del quiz.");
+        alert("Errore caricamento dati.");
     }
 }
 
@@ -98,7 +92,6 @@ function checkAnswer(selected, correct) {
     if (!isReviewMode) stopTimer();
     const options = document.querySelectorAll(".option");
     options.forEach(opt => opt.style.pointerEvents = "none");
-
     if (selected === correct) {
         options[selected].classList.add("correct");
         if (!isReviewMode) correctCount++;
@@ -130,22 +123,22 @@ function showResults(total) {
     let scoreText = isReviewMode ? `${total - wrongQuestions.length} / ${total}` : `${correctCount} / 25`;
 
     if (!isReviewMode) {
-        if (correctCount >= 24) { bgClass = "bg-pass"; title = "Esame Superato"; message = "Eccellente! Sei pronto per l'esame ufficiale."; }
-        else if (correctCount >= 21) { bgClass = "bg-oral"; title = "Esame Superato*"; message = "Bravo! Superato, ma studia per l'orale."; }
-        else { bgClass = "bg-fail"; title = "Esame Non Superato"; message = "Rivedi i tuoi errori e riprova!"; }
+        if (correctCount >= 24) { bgClass = "bg-pass"; title = "Esame Superato"; message = "Complimenti! La tua preparazione è eccellente."; }
+        else if (correctCount >= 21) { bgClass = "bg-oral"; title = "Esame Superato*"; message = "Buon lavoro! Hai superato la prova, ma ripassa per l'orale."; }
+        else { bgClass = "bg-fail"; title = "Esame Non Superato"; message = "Non scoraggiarti! Rivedi i tuoi errori e riprova."; }
     } else {
         bgClass = (wrongQuestions.length === 0) ? "bg-pass" : "bg-fail";
         title = (wrongQuestions.length === 0) ? "Recupero Completato" : "Recupero Incompleto";
-        message = (wrongQuestions.length === 0) ? "Hai corretto ogni errore!" : "Riprova ancora.";
+        message = (wrongQuestions.length === 0) ? "Ottimo! Hai corretto ogni incertezza." : "Stai andando bene, ma riprova gli ultimi errori.";
     }
 
     scoreDisplay.innerHTML = `
-        <div class="result-container">
-            <div style="font-size:24px; font-weight:bold; color:#2e7d32; margin-bottom:20px;">${title}</div>
+        <div class="result-container" style="text-align:center; width:100%;">
+            <div class="result-title">${title}</div>
             <div class="score-box ${bgClass}">
-                <h2 style="font-size:50px; margin:0;">${scoreText}</h2>
-                <p style="font-style:italic; font-weight:bold;">${message}</p>
-                ${!isReviewMode && correctCount < 21 ? '<p style="font-size:14px; opacity:0.8;">La documentazione vale per due tentativi.</p>' : ''}
+                <h2>${scoreText}</h2>
+                <p style="font-style: italic; font-weight: bold;">${message}</p>
+                ${!isReviewMode && correctCount < 21 ? '<p style="font-size: 14px; opacity: 0.9; margin-top:10px;">La documentazione è valida per due tentativi d\'esame.</p>' : ''}
             </div>
             ${wrongQuestions.length > 0 ? `<button class="btn-ersa" style="background-color:#1565c0 !important; margin-bottom:10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` : ''}
             <button class="btn-ersa" onclick="location.reload()">Riprova</button>
@@ -171,7 +164,7 @@ function startTimer(correctIndex) {
 
 function stopTimer() { clearInterval(timerInterval); }
 
-// --- IPHONE / ANDROID / PWA ---
+// --- PWA / IPHONE ---
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 if (isIos && !isStandalone) document.getElementById('ios-info').style.display = 'block';
