@@ -123,13 +123,12 @@
             z-index: 100;
         }
 
-        .result-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+        .result-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 20px;
+            text-transform: uppercase;
         }
 
         .score-box {
@@ -148,7 +147,7 @@
         .bg-oral { background-color: #ff9800; }
         .bg-fail { background-color: #b71c1c; }
 
-        /* MODALE IPHONE */
+        /* BOX CODICE E IPHONE */
         #ios-info {
             display: none;
             background: white;
@@ -161,6 +160,18 @@
             text-align: left;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
+
+        #auth-section { margin-bottom: 20px; width: 100%; }
+        #access-code {
+            width: 90%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #2e7d32;
+            font-size: 16px;
+            text-align: center;
+            text-transform: uppercase;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 
@@ -172,12 +183,15 @@
             
             <div id="ios-info">
                 <strong style="color: #1565c0;">📲 Installa su iPhone:</strong><br>
-                Tocca l'icona <strong>Condividi</strong> (il quadrato con la freccia in alto) e seleziona <strong>"Aggiungi alla schermata Home"</strong>.
+                Tocca l'icona <strong>Condividi</strong> (quadrato con freccia) e seleziona <strong>"Aggiungi alla schermata Home"</strong>.
+            </div>
+
+            <div id="auth-section">
+                <input type="text" id="access-code" placeholder="INSERISCI CODICE ACCESSO">
             </div>
 
             <button id="install-btn" class="btn-ersa" style="display:none; background-color: #1565c0 !important; margin-bottom: 15px;">Installa App Android</button>
             <button id="start-btn" class="btn-ersa">Inizia l'esercitazione</button>
-            <p style="font-size: 13px; color: #888; margin-top: 20px;">Fonte: ERSA • Aggiornato 2026</p>
         </div>
 
         <div id="quiz-container" style="display:none; flex-grow: 1;"></div>
