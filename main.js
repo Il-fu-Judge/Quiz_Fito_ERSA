@@ -15,15 +15,43 @@ const scoreDisplay = document.getElementById("score");
 
 startBtn.addEventListener("click", startQuiz);
 
+async function checkAccess() {
+    const inputCode = document.getElementById("access-code").value.trim().toUpperCase();
+    const savedAuth = localStorage.getItem("isAuthorized");
+
+    if (savedAuth === "true") return true;
+    if (!inputCode) { alert("Inserisci il codice fornito per iniziare."); return false; }
+
+    try {
+        const response = await fetch("codes.json");
+        const validCodes = await response.json();
+        if (validCodes.includes(inputCode)) {
+            localStorage.setItem("isAuthorized", "true");
+            return true;
+        } else {
+            alert("Codice errato o non valido.");
+            return false;
+        }
+    } catch (e) {
+        alert("Errore verifica: assicurati che codes.json sia presente.");
+        return false;
+    }
+}
+
 async function startQuiz() {
+    const authorized = await checkAccess();
+    if (!authorized) return;
+
     try {
         const res = await fetch("quiz.json");
         allQuestions = await res.json();
         const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
         quizQuestions = shuffle(availableQuestions).slice(0, 25);
+
         startScreen.style.display = "none";
         quizContainer.style.display = "flex";
         scoreDisplay.style.display = "none";
+        
         current = 0;
         correctCount = 0;
         wrongQuestions = [];
@@ -34,9 +62,7 @@ async function startQuiz() {
     }
 }
 
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
+function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
 function showQuestion() {
     const questionsList = isReviewMode ? wrongQuestions : quizQuestions;
@@ -51,14 +77,11 @@ function showQuestion() {
             </div>
             <div class="question">${q.question}</div>
             <div class="answers">
-                ${q.options.map((opt, i) => `
-                    <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
-                `).join('')}
+                ${q.options.map((opt, i) => `<div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>`).join('')}
             </div>
             <button id="nextBtn" class="btn-ersa" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
-
     if (!isReviewMode) startTimer(correctIndex);
 }
 
@@ -91,52 +114,31 @@ function nextQuestion() {
     }
 }
 
-function showResults(totalInRound) {
+function showResults(total) {
     quizContainer.style.display = "none";
     scoreDisplay.style.display = "flex";
-
-    let bgClass = "";
-    let title = "";
-    let message = "";
-    let scoreText = "";
+    let bgClass = ""; let title = ""; let message = "";
+    let scoreText = isReviewMode ? `${total - wrongQuestions.length} / ${total}` : `${correctCount} / 25`;
 
     if (!isReviewMode) {
-        scoreText = `${correctCount} / 25`;
-        if (correctCount >= 24) {
-            bgClass = "bg-pass"; title = "Esame Superato";
-            message = "Complimenti! La tua preparazione è eccellente. Sei pronto per l'esame ufficiale!";
-        } else if (correctCount >= 21) {
-            bgClass = "bg-oral"; title = "Esame Superato*";
-            message = "Buon lavoro! Hai superato la prova, ma non abbassare la guardia: un ultimo sforzo per l'orale!";
-        } else {
-            bgClass = "bg-fail"; title = "Esame Non Superato";
-            message = "Non scoraggiarti! L'agricoltura richiede pazienza e dedizione. Rivedi i tuoi errori e riprova!";
-        }
+        if (correctCount >= 24) { bgClass = "bg-pass"; title = "Esame Superato"; message = "Eccellente! Sei pronto per l'esame ufficiale."; }
+        else if (correctCount >= 21) { bgClass = "bg-oral"; title = "Esame Superato*"; message = "Bravo! Superato, ma studia per l'orale."; }
+        else { bgClass = "bg-fail"; title = "Esame Non Superato"; message = "Rivedi i tuoi errori e riprova!"; }
     } else {
-        const correctsInReview = totalInRound - wrongQuestions.length;
-        scoreText = `${correctsInReview} / ${totalInRound}`;
-        if (wrongQuestions.length === 0) {
-            bgClass = "bg-pass"; title = "Recupero Completato";
-            message = "Ottimo! Hai corretto ogni incertezza.";
-        } else {
-            bgClass = "bg-fail"; title = "Recupero Incompleto";
-            message = "Stai andando bene! Alcuni concetti sono ostici, riprova ancora.";
-        }
+        bgClass = (wrongQuestions.length === 0) ? "bg-pass" : "bg-fail";
+        title = (wrongQuestions.length === 0) ? "Recupero Completato" : "Recupero Incompleto";
+        message = (wrongQuestions.length === 0) ? "Hai corretto ogni errore!" : "Riprova i concetti ostici.";
     }
-
-    const reviewBtnHtml = wrongQuestions.length > 0 
-        ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
-        : "";
 
     scoreDisplay.innerHTML = `
         <div class="result-container">
-            <div style="font-size: 24px; font-weight: bold; color: #2e7d32; margin-bottom: 20px;">${title}</div>
+            <div class="result-title">${title}</div>
             <div class="score-box ${bgClass}">
                 <h2>${scoreText}</h2>
-                <p style="font-style: italic; font-weight: bold;">${message}</p>
-                ${!isReviewMode && correctCount < 21 ? '<p style="font-size: 14px; opacity: 0.8; margin-top:10px;">Ricorda: hai due tentativi prima di dover ripresentare domanda.</p>' : ''}
+                <p>${message}</p>
+                ${!isReviewMode && correctCount < 21 ? '<p style="font-size: 14px; opacity:0.8;">Hai due tentativi d\'esame validi.</p>' : ''}
             </div>
-            ${reviewBtnHtml}
+            ${wrongQuestions.length > 0 ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` : ''}
             <button class="btn-ersa" onclick="location.reload()">Riprova l'esercitazione</button>
         </div>
     `;
@@ -149,8 +151,7 @@ function startReview() {
 }
 
 function startTimer(correctIndex) {
-    let time = 60;
-    const bar = document.getElementById("timeBar");
+    let time = 60; const bar = document.getElementById("timeBar");
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         time--;
@@ -161,24 +162,16 @@ function startTimer(correctIndex) {
 
 function stopTimer() { clearInterval(timerInterval); }
 
-// --- PWA E INSTALLAZIONE ---
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
-}
-
-// Rileva iPhone
+// RILEVA IPHONE / ANDROID
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-if (isIos && !isStandalone) { document.getElementById('ios-info').style.display = 'block'; }
+if (isIos && !isStandalone) document.getElementById('ios-info').style.display = 'block';
 
-// Android Originale
+if (localStorage.getItem("isAuthorized") === "true") document.getElementById('auth-section').style.display = 'none';
+
 let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
-});
-installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-        deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none';
-    }
-});
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
+installBtn.addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none'; } });
+
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
