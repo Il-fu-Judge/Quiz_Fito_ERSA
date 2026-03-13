@@ -182,3 +182,34 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.log('PWA: Errore registrazione', err));
     });
 }
+
+// --- GESTIONE INSTALLAZIONE ANDROID ---
+let deferredPrompt;
+const installBtn = document.getElementById('install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Impedisce la comparsa automatica del banner standard
+    e.preventDefault();
+    // Memorizza l'evento
+    deferredPrompt = e;
+    // Mostra il pulsante personalizzato
+    installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        // Mostra il prompt di installazione
+        deferredPrompt.prompt();
+        // Attendi la scelta dell'utente
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
+        // Reset
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+    }
+});
+
+window.addEventListener('appinstalled', () => {
+    console.log('App installata!');
+    installBtn.style.display = 'none';
+});
