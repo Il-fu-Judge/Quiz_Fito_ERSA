@@ -7,33 +7,32 @@
     <title>Esercitazione Patentino Fitosanitari ERSA</title>
     
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2e7d32">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2e7d32">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <style>
         /* RESET E BASE MOBILE-FRIENDLY */
         html, body {
-            height: 100%; /* Più stabile di vh su mobile */
+            height: 100%;
             margin: 0;
             padding: 0;
             font-family: Arial, Helvetica, sans-serif;
             background: #f5f7f5;
             color: #333;
+            overflow: hidden; /* Evita lo scroll dell'intera pagina */
         }
 
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
         }
 
         #app {
             max-width: 600px;
             width: 100%;
-            /* Utilizziamo min-height invece di altezza fissa per evitare sparizioni */
-            min-height: 100%; 
+            height: 100%; /* Altezza fissa allo schermo */
             display: flex;
             flex-direction: column;
             padding: 20px;
@@ -41,7 +40,7 @@
             position: relative;
         }
 
-        /* PULSANTI ERSA - Grandi, Verdi, Testo Bianco */
+        /* PULSANTI ERSA */
         .btn-ersa {
             background-color: #2e7d32 !important;
             color: white !important;
@@ -56,12 +55,12 @@
             display: block;
             box-sizing: border-box;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            -webkit-appearance: none; /* Rimuove stili iOS di default */
+            -webkit-appearance: none;
         }
 
         /* SCHERMATA INIZIALE */
         .start-screen {
-            flex-grow: 1; /* Prende tutto lo spazio per centrare */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -73,16 +72,26 @@
         .subtitle { font-size: 18px; color: #555; margin-bottom: 30px; }
         .source-info { font-size: 13px; color: #888; margin-top: 20px; }
 
-        /* QUIZ SCREEN - Centratura Verticale */
+        /* QUIZ SCREEN - STRUTTURA ANTI-SOVRAPPOSIZIONE */
         .quiz-screen {
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            height: 100%;
+        }
+
+        /* Contenitore per Domanda e Opzioni che permette lo scroll se serve */
+        .scrollable-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centra il contenuto verticalmente nel poco spazio */
+            padding-bottom: 100px; /* SPAZIO RISERVATO PER IL TASTO AVANTI */
+            box-sizing: border-box;
         }
 
         .question {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: bold;
             margin-bottom: 25px;
             line-height: 1.4;
@@ -95,8 +104,8 @@
             height: 10px;
             background: #ddd;
             border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
+            margin-bottom: 15px;
+            flex-shrink: 0; /* Impedisce alla barra di rimpicciolirsi */
         }
         #timeBar {
             height: 100%;
@@ -105,28 +114,26 @@
             transition: width 1s linear;
         }
 
-        /* OPZIONI RISPOSTA */
         .option {
             border: 2px solid #2e7d32;
             border-radius: 10px;
             padding: 16px;
-            margin-bottom: 14px;
-            font-size: 18px;
+            margin-bottom: 12px;
+            font-size: 17px;
             background: white;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent; /* Rimuove il flash blu su mobile */
+            -webkit-tap-highlight-color: transparent;
         }
         .option.correct { background: #2e7d32 !important; color: white !important; }
         .option.wrong { background: #b71c1c !important; color: white !important; border-color: #b71c1c !important; }
 
-        /* TASTO AVANTI STICKY ERGONOMICO */
+        /* TASTO AVANTI - Posizionato sopra il padding del contenitore */
         #nextBtn {
-            position: fixed;
+            position: absolute;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 560px;
+            left: 20px;
+            right: 20px;
+            width: auto;
             display: none;
             z-index: 100;
         }
@@ -139,6 +146,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            overflow-y: auto;
         }
 
         .result-title {
@@ -161,7 +169,6 @@
         .score-box h2 { font-size: 50px; margin: 0; }
         .score-box p { font-size: 17px; margin-top: 12px; line-height: 1.4; }
 
-        /* COLORI BOX RISULTATI */
         .bg-pass { background-color: #2e7d32; }
         .bg-oral { background-color: #ff9800; }
         .bg-fail { background-color: #b71c1c; }
@@ -181,8 +188,8 @@
             <p class="source-info">Fonte: ERSA • Aggiornato 2026</p>
         </div>
 
-        <div id="quiz-container" style="display:none; flex-grow: 1;"></div>
-        <div id="score" style="display:none; flex-grow: 1;"></div>
+        <div id="quiz-container" style="display:none; height: 100%;"></div>
+        <div id="score" style="display:none; height: 100%;"></div>
     </div>
 
     <script src="main.js"></script>
