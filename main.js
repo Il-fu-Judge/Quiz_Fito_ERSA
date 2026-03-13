@@ -135,8 +135,9 @@ function showResults(totalAttemptedInRound) {
         }
     }
 
+    // PULSANTE RIVEDI ERRORI - Ora usa lo stesso blu dell'installazione (#1565c0)
     const reviewBtnHtml = wrongQuestions.length > 0 
-        ? `<button class="btn-ersa" style="background-color: #555 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
+        ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
         : "";
 
     scoreDisplay.innerHTML = `
@@ -182,3 +183,28 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.log('PWA: Errore registrazione', err));
     });
 }
+
+// --- GESTIONE INSTALLAZIONE ANDROID ---
+let deferredPrompt;
+const installBtn = document.getElementById('install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+    }
+});
+
+window.addEventListener('appinstalled', () => {
+    console.log('App installata!');
+    installBtn.style.display = 'none';
+});
