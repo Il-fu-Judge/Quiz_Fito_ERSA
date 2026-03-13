@@ -44,14 +44,14 @@ function showQuestion() {
     quizContainer.innerHTML = `
         <div class="quiz-screen">
             <div id="timeBarContainer"><div id="timeBar"></div></div>
-            <div style="text-align:center; font-size:14px; color:#666; margin-bottom:10px;">Domanda ${current + 1} di ${TOTAL_QUESTIONS}</div>
+            <div style="text-align:center; font-size:14px; color:#666; margin-bottom:10px;">DOMANDA ${current + 1} DI ${TOTAL_QUESTIONS}</div>
             <div class="question">${q.question}</div>
             <div class="answers">
                 ${q.options.map((opt, i) => `
                     <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
                 `).join('')}
             </div>
-            <button id="nextBtn" class="btn-green" onclick="nextQuestion()">AVANTI</button>
+            <button id="nextBtn" class="btn-ersa" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
     startTimer(correctIndex);
@@ -91,15 +91,15 @@ function showResults() {
 
     if (correctCount >= 24) {
         bgClass = "bg-pass";
-        title = "ESAME SUPERATO";
-        message = "Ottima preparazione! Hai superato brillantemente l'esercitazione.";
+        title = "Esame Superato";
+        message = "Eccellente! Hai dimostrato una preparazione perfetta.";
     } else if (correctCount >= 21) {
         bgClass = "bg-oral";
-        title = "ESAME SUPERATO*";
+        title = "Esame Superato*";
         message = "Esame superato. Sarà necessario sostenere un esame orale ausiliario per confermare l'abilitazione.";
     } else {
         bgClass = "bg-fail";
-        title = "ESAME NON SUPERATO";
+        title = "Esame Non Superato";
         message = "ERSA permette due tentativi. Se entrambi sono negativi, bisognerà rifare la richiesta consegnando nuovamente la documentazione.";
     }
 
@@ -110,7 +110,7 @@ function showResults() {
                 <h2>${correctCount} / ${TOTAL_QUESTIONS}</h2>
                 <p>${message}</p>
             </div>
-            <button id="restartBtn" class="btn-green" onclick="location.reload()">Riprova l'Esercitazione</button>
+            <button class="btn-ersa" onclick="location.reload()">Riprova l'esercitazione</button>
         </div>
     `;
 }
