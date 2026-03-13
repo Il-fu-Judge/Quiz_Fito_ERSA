@@ -21,6 +21,7 @@ async function startQuiz() {
         const res = await fetch("quiz.json");
         allQuestions = await res.json();
 
+        // Filtra le domande bannate
         const availableQuestions = allQuestions.filter(
             q => !bannedQuestions.includes(q.id)
         );
@@ -36,12 +37,12 @@ async function startQuiz() {
 
         showQuestion();
     } catch (error) {
-        console.error("Errore nel caricamento del quiz:", error);
-        alert("Impossibile caricare il file quiz.json. Assicurati che sia nella stessa cartella.");
+        console.error("Errore:", error);
+        alert("Errore nel caricamento del file quiz.json.");
     }
 }
 
-// RANDOM DOMANDE
+// RANDOMIZZAZIONE
 function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
 }
@@ -54,8 +55,8 @@ function showQuestion() {
     quizContainer.innerHTML = `
         <div class="quiz-screen">
             <div id="timer">
-                <span>Domanda ${current + 1} di ${quizQuestions.length}</span>
-                <span id="timeLeft">Tempo: 60</span>
+                <span>DOMANDA ${current + 1} DI ${quizQuestions.length}</span>
+                <span id="timeLeft">Tempo: 60s</span>
             </div>
 
             <div id="timeBarContainer">
@@ -113,14 +114,13 @@ function showResults() {
     
     const percentage = (correctCount / quizQuestions.length) * 100;
     let message = percentage >= 80 ? "Ottimo lavoro! Supereresti l'esame." : "Hai bisogno di studiare ancora un po'.";
-    let statusClass = percentage >= 80 ? "text-success" : "text-danger";
 
     scoreDisplay.innerHTML = `
         <div class="card result-screen">
             <h2>Risultato Finale</h2>
             <h1>${correctCount} / ${quizQuestions.length}</h1>
             <p id="score-status">${message}</p>
-            <button id="restartBtn" onclick="location.reload()">Riprova</button>
+            <button id="restartBtn" onclick="location.reload()">Riprova il Quiz</button>
         </div>
     `;
 }
@@ -131,12 +131,12 @@ function startTimer(correctIndex) {
     const timerElem = document.getElementById("timeLeft");
     const bar = document.getElementById("timeBar");
 
-    timerElem.textContent = "Tempo: " + time;
+    timerElem.textContent = "Tempo: " + time + "s";
     bar.style.width = "100%";
 
     timerInterval = setInterval(() => {
         time--;
-        timerElem.textContent = "Tempo: " + time;
+        timerElem.textContent = "Tempo: " + time + "s";
         bar.style.width = (time / TIME_PER_QUESTION * 100) + "%";
 
         if (time <= 0) {
