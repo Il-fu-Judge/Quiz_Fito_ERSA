@@ -1,104 +1,86 @@
-// BAN LIST per domande da non utilizzare
 const bannedQuestions = [70, 140, 141, 148];
+const TIME_PER_QUESTION = 60;
 
 let allQuestions = [];
 let quizQuestions = [];
 let current = 0;
 let correctCount = 0;
 let timerInterval;
-const TIME_PER_QUESTION = 60;
 
-const quizContainer = document.getElementById("quiz-container");
-const startBtn = document.getElementById("start-btn");
 const startScreen = document.getElementById("start-screen");
-const scoreDisplay = document.getElementById("score");
+const quizContainer = document.getElementById("quiz-container");
+const scoreScreen = document.getElementById("score-screen");
+const feedbackFooter = document.getElementById("feedback-footer");
 
-startBtn.addEventListener("click", startQuiz);
+document.getElementById("start-btn").addEventListener("click", startQuiz);
 
-// AVVIO QUIZ
 async function startQuiz() {
     try {
         const res = await fetch("quiz.json");
         allQuestions = await res.json();
-
-        // Filtra le domande bannate
-        const availableQuestions = allQuestions.filter(
-            q => !bannedQuestions.includes(q.id)
-        );
-
-        // Mescola e prendi 30 domande
+        const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
         quizQuestions = shuffle(availableQuestions).slice(0, 30);
 
         startScreen.style.display = "none";
-        quizContainer.style.display = "block";
-
-        correctCount = 0;
-        current = 0;
-
+        quizContainer.style.display = "flex";
         showQuestion();
-    } catch (error) {
-        console.error("Errore:", error);
-        alert("Errore nel caricamento del file quiz.json.");
+    } catch (e) {
+        alert("Errore nel caricamento del file quiz.json");
     }
 }
 
-// RANDOMIZZAZIONE
 function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
 }
 
-// MOSTRA DOMANDA
 function showQuestion() {
     const q = quizQuestions[current];
-    const correctIndex = q.correct;
+    feedbackFooter.style.display = "none";
+    
+    document.getElementById("question-text").innerText = q.question;
+    const optionsDiv = document.getElementById("options-container");
+    optionsDiv.innerHTML = "";
 
-    quizContainer.innerHTML = `
-        <div class="quiz-screen">
-            <div id="timer">
-                <span>DOMANDA ${current + 1} DI ${quizQuestions.length}</span>
-                <span id="timeLeft">Tempo: 60s</span>
-            </div>
+    // Aggiorna Progresso
+    const progress = (current / quizQuestions.length) * 100;
+    document.getElementById("progressBar").style.width = `${progress}%`;
 
-            <div id="timeBarContainer">
-                <div id="timeBar"></div>
-            </div>
+    q.options.forEach((opt, i) => {
+        const btn = document.createElement("div");
+        btn.className = "option";
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(i);
+        optionsDiv.appendChild(btn);
+    });
 
-            <div class="question">${q.question}</div>
-
-            <div class="answers">
-                ${q.options.map((opt, i) => `
-                    <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
-                `).join('')}
-            </div>
-
-            <div class="next-container">
-                <button id="nextBtn" style="display:none;" onclick="nextQuestion()">Avanti</button>
-            </div>
-        </div>
-    `;
-
-    startTimer(correctIndex);
+    startTimer();
 }
 
-// CONTROLLO RISPOSTA
-function checkAnswer(selected, correct) {
+function checkAnswer(selectedIndex) {
     stopTimer();
-
+    const q = quizQuestions[current];
+    const isCorrect = selectedIndex === q.correct;
+    
     const options = document.querySelectorAll(".option");
     options.forEach(opt => opt.style.pointerEvents = "none");
 
-    if (selected === correct) {
-        options[selected].classList.add("correct");
-        correctCount++;
-    } else {
-        options[selected].classList.add("wrong");
-        options[correct].classList.add("correct");
-    }
+    feedbackFooter.style.display = "flex";
+    const title = document.getElementById("feedback-title");
 
-    document.getElementById("nextBtn").style.display = "block";
+    if (isCorrect) {
+        correctCount++;
+        feedbackFooter.className = "correct-bg";
+        title.innerText = "Risposta Corretta";
+        options[selectedIndex].classList.add("selected");
+    } else {
+        feedbackFooter.className = "wrong-bg";
+        title.innerText = "Risposta Errata";
+        options[selectedIndex].style.borderColor = "#d32f2f";
+        options[q.correct].style.borderColor = "#2e7d32";
+        options[q.correct].style.backgroundColor = "#e8f5e9";
+    }
 }
 
-// PROSSIMA DOMANDA
 function nextQuestion() {
     current++;
     if (current < quizQuestions.length) {
@@ -108,51 +90,38 @@ function nextQuestion() {
     }
 }
 
-// RISULTATI FINALI
 function showResults() {
     quizContainer.style.display = "none";
-    
-    const percentage = (correctCount / quizQuestions.length) * 100;
-    let message = percentage >= 80 ? "Ottimo lavoro! Supereresti l'esame." : "Hai bisogno di studiare ancora un po'.";
+    feedbackFooter.style.display = "none";
+    scoreScreen.style.display = "flex";
 
-    scoreDisplay.innerHTML = `
-        <div class="card result-screen">
-            <h2>Risultato Finale</h2>
-            <h1>${correctCount} / ${quizQuestions.length}</h1>
-            <p id="score-status">${message}</p>
-            <button id="restartBtn" onclick="location.reload()">Riprova il Quiz</button>
-        </div>
+    const percentage = Math.round((correctCount / quizQuestions.length) * 100);
+    const passed = percentage >= 80;
+
+    scoreScreen.innerHTML = `
+        <h1>Quiz Terminato</h1>
+        <div class="score-val">${correctCount} / ${quizQuestions.length}</div>
+        <p style="font-size: 20px; margin-bottom: 30px;">
+            ${passed ? 'Complimenti, hai superato la prova!' : 'Non hai raggiunto il punteggio minimo (80%).'}
+        </p>
+        <button class="btn-main" onclick="location.reload()">Riprova</button>
     `;
 }
 
-// TIMER
-function startTimer(correctIndex) {
+function startTimer() {
     let time = TIME_PER_QUESTION;
-    const timerElem = document.getElementById("timeLeft");
-    const bar = document.getElementById("timeBar");
+    const display = document.getElementById("timer-display");
+    display.textContent = time + "s";
 
-    timerElem.textContent = "Tempo: " + time + "s";
-    bar.style.width = "100%";
-
+    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         time--;
-        timerElem.textContent = "Tempo: " + time + "s";
-        bar.style.width = (time / TIME_PER_QUESTION * 100) + "%";
-
+        display.textContent = time + "s";
         if (time <= 0) {
             stopTimer();
-            autoFail(correctIndex);
+            checkAnswer(-1); // Tempo scaduto = errore
         }
     }, 1000);
-}
-
-function autoFail(correctIndex) {
-    const buttons = document.querySelectorAll(".option");
-    buttons.forEach((btn, i) => {
-        btn.style.pointerEvents = "none";
-        if (i === correctIndex) btn.classList.add("correct");
-    });
-    document.getElementById("nextBtn").style.display = "block";
 }
 
 function stopTimer() {
