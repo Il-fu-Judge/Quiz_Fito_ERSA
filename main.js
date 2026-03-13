@@ -21,24 +21,20 @@ async function startQuiz() {
         allQuestions = await res.json();
         const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
         quizQuestions = shuffle(availableQuestions).slice(0, 25);
-
         startScreen.style.display = "none";
         quizContainer.style.display = "block";
         scoreDisplay.style.display = "none";
-        
         current = 0;
         correctCount = 0;
         wrongQuestions = [];
         isReviewMode = false;
         showQuestion();
     } catch (e) {
-        alert("Errore nel caricamento dei dati.");
+        alert("Errore caricamento dati.");
     }
 }
 
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
+function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
 function showQuestion() {
     const questionsList = isReviewMode ? wrongQuestions : quizQuestions;
@@ -48,8 +44,8 @@ function showQuestion() {
     quizContainer.innerHTML = `
         <div class="quiz-screen">
             ${!isReviewMode ? '<div id="timeBarContainer"><div id="timeBar"></div></div>' : ''}
-            <div style="text-align:center; font-size:13px; color:#666; margin-bottom:5px; font-weight:bold; flex-shrink:0;">
-                ${isReviewMode ? `RECUPERO ERRORE ${current + 1} DI ${questionsList.length}` : `DOMANDA ${current + 1} DI 25`}
+            <div style="text-align:center; font-size:12px; margin-bottom:5px;">
+                ${isReviewMode ? `RECUPERO ${current + 1}/${questionsList.length}` : `DOMANDA ${current + 1}/25`}
             </div>
             
             <div class="play-area">
@@ -61,7 +57,7 @@ function showQuestion() {
                 </div>
             </div>
 
-            <button id="nextBtn" class="btn-ersa" onclick="nextQuestion()">AVANTI</button>
+            <button id="nextBtn" class="btn-ersa" style="display:none;" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
 
@@ -87,7 +83,6 @@ function checkAnswer(selected, correct) {
 function nextQuestion() {
     const questionsList = isReviewMode ? wrongQuestions : quizQuestions;
     current++;
-    
     if (current < questionsList.length) {
         showQuestion();
     } else {
@@ -98,55 +93,21 @@ function nextQuestion() {
     }
 }
 
-function showResults(totalAttemptedInRound) {
+function showResults(totalAttempted) {
     quizContainer.style.display = "none";
     scoreDisplay.style.display = "block";
-
-    let bgClass = "";
-    let title = "";
-    let message = "";
-    let scoreText = "";
-
-    if (!isReviewMode) {
-        scoreText = `${correctCount} / 25`;
-        if (correctCount >= 24) {
-            bgClass = "bg-pass"; title = "Esame Superato";
-            message = "Complimenti! La tua preparazione è eccellente. Sei pronto per l'esame ufficiale!";
-        } else if (correctCount >= 21) {
-            bgClass = "bg-oral"; title = "Esame Superato*";
-            message = "Buon lavoro! Hai superato la prova, ma non abbassare la guardia: un ultimo sforzo per l'orale!";
-        } else {
-            bgClass = "bg-fail"; title = "Esame Non Superato";
-            message = "Non scoraggiarti! L'agricoltura richiede pazienza e dedizione. Rivedi i tuoi errori e riprova, ce la farai!";
-        }
-    } else {
-        const correctsInReview = totalAttemptedInRound - wrongQuestions.length;
-        scoreText = `${correctsInReview} / ${totalAttemptedInRound}`;
-
-        if (wrongQuestions.length === 0) {
-            bgClass = "bg-pass";
-            title = "Recupero Completato";
-            message = "Ottimo! Hai corretto ogni incertezza. Ogni errore affrontato è una lezione imparata per sempre!";
-        } else {
-            bgClass = "bg-fail";
-            title = "Recupero Incompleto";
-            message = "Stai andando bene! Alcuni concetti sono ostici, ma affrontandoli uno ad uno diventerai un esperto.";
-        }
-    }
-
-    const reviewBtnHtml = wrongQuestions.length > 0 
-        ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
-        : "";
+    
+    let scoreText = isReviewMode ? `${totalAttempted - wrongQuestions.length} / ${totalAttempted}` : `${correctCount} / 25`;
+    let bgClass = (correctCount >= 21 || (isReviewMode && wrongQuestions.length === 0)) ? "bg-pass" : "bg-fail";
 
     scoreDisplay.innerHTML = `
         <div class="result-container">
-            <div class="result-title">${title}</div>
             <div class="score-box ${bgClass}">
-                <h2>${scoreText}</h2>
-                <p style="font-style: italic; font-weight: bold; margin-bottom: 15px;">${message}</p>
+                <h2 style="font-size:40px; margin:0;">${scoreText}</h2>
+                <p>Esame terminato</p>
             </div>
-            ${reviewBtnHtml}
-            <button class="btn-ersa" onclick="location.reload()">Riprova l'esercitazione</button>
+            ${wrongQuestions.length > 0 ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` : ''}
+            <button class="btn-ersa" onclick="location.reload()">Riprova</button>
         </div>
     `;
 }
@@ -163,22 +124,19 @@ function startReview() {
 function startTimer(correctIndex) {
     let time = 60;
     const bar = document.getElementById("timeBar");
+    if (!bar) return;
+    bar.style.width = "100%";
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         time--;
-        if (bar) bar.style.width = (time / 60 * 100) + "%";
+        bar.style.width = (time / 60 * 100) + "%";
         if (time <= 0) { stopTimer(); checkAnswer(-1, correctIndex); }
     }, 1000);
 }
 
 function stopTimer() { clearInterval(timerInterval); }
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
-    });
-}
-
+// LOGICA INSTALLAZIONE
 let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
 
@@ -191,12 +149,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
         deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
         deferredPrompt = null;
         installBtn.style.display = 'none';
     }
-});
-
-window.addEventListener('appinstalled', () => {
-    installBtn.style.display = 'none';
 });
