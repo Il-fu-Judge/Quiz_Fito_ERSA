@@ -1,3 +1,34 @@
+// --- SISTEMA DI ACCESSO ---
+function checkAuth() {
+    if (localStorage.getItem("isAuthorized") === "true") {
+        document.getElementById("auth-overlay").style.display = "none";
+    } else {
+        document.getElementById("auth-overlay").style.display = "flex";
+    }
+}
+
+async function validateCode() {
+    const input = document.getElementById("access-code").value.trim().toUpperCase();
+    if (!input) { alert("Per favore, inserisci un codice."); return; }
+
+    try {
+        const response = await fetch("codes.json");
+        const validCodes = await response.json();
+
+        if (validCodes.includes(input)) {
+            localStorage.setItem("isAuthorized", "true");
+            document.getElementById("auth-overlay").style.display = "none";
+        } else {
+            alert("Codice non valido.");
+        }
+    } catch (e) {
+        alert("Errore nel caricamento del file codes.json");
+    }
+}
+
+// Esegui il controllo immediatamente
+checkAuth();
+// --------------------------
 const bannedQuestions = [70, 140, 141, 148];
 let allQuestions = [];
 let quizQuestions = [];
