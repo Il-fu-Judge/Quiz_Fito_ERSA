@@ -151,4 +151,31 @@
             box-sizing: border-box;
         }
 
-        .score-
+        .score-box h2 { font-size: 60px; margin: 0; }
+        .score-box p { font-size: 18px; margin-top: 15px; line-height: 1.4; font-weight: 500; }
+
+        /* COLORI BOX (Rosso ammorbidito) */
+        .bg-pass { background-color: #2e7d32; }
+        .bg-oral { background-color: #ff9800; }
+        .bg-fail { background-color: #b71c1c; } /* Rosso bordeaux meno aggressivo */
+
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="start-screen" class="start-screen">
+            <h1>Patentino Fitosanitario</h1>
+            <p class="subtitle">Esercitazione per il rilascio del certificato di abilitazione.</p>
+            <button id="start-btn" class="btn-ersa">Inizia l'esercitazione</button>
+            <p class="source-info">Domande tratte dal sito ERSA • Aggiornato a Marzo 2026</p>
+        </div>
+
+        <div id="quiz-container" style="display:none; height: 100%;"></div>
+
+        <div id="score" style="display:none; height: 100%;"></div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
