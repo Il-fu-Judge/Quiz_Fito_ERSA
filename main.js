@@ -135,8 +135,9 @@ function showResults(totalAttemptedInRound) {
         }
     }
 
+    // PULSANTE RIVEDI ERRORI - Ora usa lo stesso blu dell'installazione (#1565c0)
     const reviewBtnHtml = wrongQuestions.length > 0 
-        ? `<button class="btn-ersa" style="background-color: #555 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
+        ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
         : "";
 
     scoreDisplay.innerHTML = `
@@ -188,22 +189,16 @@ let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
 
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Impedisce la comparsa automatica del banner standard
     e.preventDefault();
-    // Memorizza l'evento
     deferredPrompt = e;
-    // Mostra il pulsante personalizzato
     installBtn.style.display = 'block';
 });
 
 installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
-        // Mostra il prompt di installazione
         deferredPrompt.prompt();
-        // Attendi la scelta dell'utente
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`User response to install prompt: ${outcome}`);
-        // Reset
         deferredPrompt = null;
         installBtn.style.display = 'none';
     }
