@@ -44,7 +44,7 @@ function showQuestion() {
     quizContainer.innerHTML = `
         <div class="quiz-screen">
             <div id="timeBarContainer"><div id="timeBar"></div></div>
-            <div style="text-align:center; font-size:14px; color:#666; margin-bottom:10px;">DOMANDA ${current + 1} DI ${TOTAL_QUESTIONS}</div>
+            <div style="text-align:center; font-size:14px; color:#666; margin-bottom:10px; font-weight:bold;">DOMANDA ${current + 1} DI ${TOTAL_QUESTIONS}</div>
             <div class="question">${q.question}</div>
             <div class="answers">
                 ${q.options.map((opt, i) => `
@@ -118,6 +118,7 @@ function showResults() {
 function startTimer(correctIndex) {
     let time = TIME_PER_QUESTION;
     const bar = document.getElementById("timeBar");
+    if (!bar) return;
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         time--;
