@@ -1,3 +1,41 @@
+// --- LOGICA PWA: GESTIONE INSTALLAZIONE ---
+let deferredPrompt;
+const installBtn = document.getElementById('install-pwa-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Impedisce a Chrome di mostrare il banner automatico
+    e.preventDefault();
+    // Salva l'evento per usarlo in seguito
+    deferredPrompt = e;
+    // Mostra il pulsante di installazione nell'interfaccia
+    if (installBtn) {
+        installBtn.style.display = 'block';
+    }
+});
+
+async function installPWA() {
+    if (!deferredPrompt) return;
+    
+    // Mostra il prompt di installazione
+    deferredPrompt.prompt();
+    
+    // Attendi la risposta dell'utente
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`Risposta dell'utente all'installazione: ${outcome}`);
+    
+    // Pulizia: il prompt può essere usato una sola volta
+    deferredPrompt = null;
+    if (installBtn) installBtn.style.display = 'none';
+}
+
+// Nascondi il pulsante se l'app viene installata con successo
+window.addEventListener('appinstalled', () => {
+    console.log('PWA installata correttamente!');
+    if (installBtn) installBtn.style.display = 'none';
+    deferredPrompt = null;
+});
+
+// --- LOGICA QUIZ ORIGINALE ---
 const bannedQuestions = [70, 140, 141, 148];
 let allQuestions = [];
 let quizQuestions = [];
@@ -7,7 +45,7 @@ let current = 0;
 let correctCount = 0;
 let timerInterval;
 let isReviewMode = false;
-let totalQuestionsInReview = 0; // Per calcolare il punteggio nel recupero
+let totalQuestionsInReview = 0;
 
 const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
@@ -58,7 +96,7 @@ function showQuestion() {
                     <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
                 `).join('')}
             </div>
-            <button id="nextBtn" class="btn-ersa" onclick="nextQuestion()">AVANTI</button>
+            <button id="nextBtn" class="btn-ersa" style="display:none;" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
 
@@ -76,8 +114,6 @@ function checkAnswer(selected, correct) {
     } else {
         if (selected !== -1) options[selected].classList.add("wrong");
         options[correct].classList.add("correct");
-        
-        // Salva la domanda per il prossimo round di revisione
         currentWrongAttempts.push(isReviewMode ? wrongQuestions[current] : quizQuestions[current]);
     }
     document.getElementById("nextBtn").style.display = "block";
@@ -107,7 +143,6 @@ function showResults(totalAttemptedInRound) {
     let scoreText = "";
 
     if (!isReviewMode) {
-        // --- RISULTATI QUIZ PRINCIPALE ---
         scoreText = `${correctCount} / 25`;
         if (correctCount >= 24) {
             bgClass = "bg-pass"; title = "Esame Superato";
@@ -120,7 +155,6 @@ function showResults(totalAttemptedInRound) {
             message = "Non scoraggiarti! L'agricoltura richiede pazienza e dedizione. Rivedi i tuoi errori e riprova, ce la farai!";
         }
     } else {
-        // --- RISULTATI RECUPERO ERRORI ---
         const correctsInReview = totalAttemptedInRound - wrongQuestions.length;
         scoreText = `${correctsInReview} / ${totalAttemptedInRound}`;
 
@@ -175,6 +209,7 @@ function startTimer(correctIndex) {
 
 function stopTimer() { clearInterval(timerInterval); }
 
+// Registrazione Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
