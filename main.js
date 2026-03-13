@@ -20,8 +20,6 @@ startBtn.addEventListener("click", startQuiz);
 // AVVIO QUIZ
 async function startQuiz() {
 
-    document.body.classList.add("quiz-active");
-
     const res = await fetch("quiz.json");
     allQuestions = await res.json();
 
@@ -148,8 +146,6 @@ function nextQuestion() {
 
 // RISULTATO FINALE
 function showResult() {
-
-    document.body.classList.add("result-active");
 
     let background = "";
     let message = "";
