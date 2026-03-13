@@ -57,6 +57,34 @@
             -webkit-appearance: none;
         }
 
+        /* SCHERMATA BLOCO CODICE */
+        #auth-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #f5f7f5;
+            z-index: 10000;
+            display: none; /* Gestito da JS */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        #access-code {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #2e7d32;
+            font-size: 18px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* QUIZ SCREEN */
         .start-screen {
             flex-grow: 1;
             display: flex;
@@ -69,34 +97,6 @@
         h1 { font-size: 26px; color: #2e7d32; margin-bottom: 10px; }
         .subtitle { font-size: 18px; color: #555; margin-bottom: 30px; }
 
-        /* SEZIONE LOCK / CODICE */
-        #auth-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #f5f7f5;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        #access-code {
-            width: 80%;
-            max-width: 300px;
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px solid #2e7d32;
-            font-size: 18px;
-            text-align: center;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-
-        /* TIMER E QUIZ */
         #timeBarContainer {
             width: 100%;
             height: 10px;
@@ -112,6 +112,8 @@
             transition: width 1s linear;
         }
 
+        .question { font-size: 20px; font-weight: bold; margin-bottom: 25px; text-align: center; line-height: 1.4; }
+
         .option {
             border: 2px solid #2e7d32;
             border-radius: 10px;
@@ -120,8 +122,9 @@
             font-size: 18px;
             background: white;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
-        .option.correct { background: #2e7d32 !important; color: white !important; }
+        .option.correct { background: #2e7d32 !important; color: white !important; border-color: #2e7d32 !important; }
         .option.wrong { background: #b71c1c !important; color: white !important; border-color: #b71c1c !important; }
 
         #nextBtn {
@@ -133,18 +136,23 @@
             z-index: 100;
         }
 
+        .result-title { font-size: 24px; font-weight: bold; color: #2e7d32; margin-bottom: 20px; text-transform: uppercase; }
+
         .score-box {
             width: 100%;
             padding: 30px 20px;
             border-radius: 20px;
             color: white;
             margin-bottom: 25px;
+            box-sizing: border-box;
         }
+        .score-box h2 { font-size: 50px; margin: 0; }
+        .score-box p { font-size: 17px; margin-top: 12px; line-height: 1.4; }
+
         .bg-pass { background-color: #2e7d32; }
         .bg-oral { background-color: #ff9800; }
         .bg-fail { background-color: #b71c1c; }
 
-        /* IPHONE INFO */
         #ios-info {
             display: none;
             background: white;
@@ -159,12 +167,11 @@
 </head>
 
 <body>
-    <div id="auth-overlay" style="display: none;">
+    <div id="auth-overlay">
         <h1 style="color: #2e7d32;">Accesso Riservato</h1>
-        <p style="margin-bottom: 30px;">Inserisci il codice univoco per sbloccare l'esercitazione.</p>
+        <p>Inserisci il codice per sbloccare l'esercitazione.</p>
         <input type="text" id="access-code" placeholder="CODICE">
         <button class="btn-ersa" style="max-width: 300px;" onclick="validateCode()">SBLOCCA</button>
-        <p style="margin-top: 20px; font-size: 12px; color: #888;">Contatta l'amministratore per ottenere un codice.</p>
     </div>
 
     <div id="app">
@@ -173,7 +180,7 @@
             <p class="subtitle">Esercitazione per il rilascio del certificato di abilitazione.</p>
             
             <div id="ios-info">
-                <strong style="color: #1565c0;">📲 Installa su iPhone:</strong><br>
+                <strong>📲 Installa su iPhone:</strong><br>
                 Tocca l'icona <strong>Condividi</strong> e seleziona <strong>"Aggiungi alla schermata Home"</strong>.
             </div>
 
