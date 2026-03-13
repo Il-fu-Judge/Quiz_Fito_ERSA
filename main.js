@@ -29,7 +29,8 @@ async function startQuiz() {
         correctCount = 0;
         showQuestion();
     } catch (e) {
-        alert("Errore caricamento dati.");
+        console.error(e);
+        alert("Errore nel caricamento dei dati.");
     }
 }
 
@@ -92,15 +93,15 @@ function showResults() {
     if (correctCount >= 24) {
         bgClass = "bg-pass";
         title = "Esame Superato";
-        message = "Eccellente! Hai dimostrato una preparazione perfetta.";
+        message = "Ottima preparazione! Hai superato l'esercitazione.";
     } else if (correctCount >= 21) {
         bgClass = "bg-oral";
         title = "Esame Superato*";
-        message = "Esame superato. Sarà necessario sostenere un esame orale ausiliario per confermare l'abilitazione.";
+        message = "Esame superato con riserva. Sarà necessario sostenere un esame orale ausiliario.";
     } else {
         bgClass = "bg-fail";
         title = "Esame Non Superato";
-        message = "ERSA permette due tentativi. Se entrambi sono negativi, bisognerà rifare la richiesta consegnando nuovamente la documentazione.";
+        message = "ERSA permette due tentativi. Se negativi, bisognerà rifare la richiesta consegnando nuovamente i documenti.";
     }
 
     scoreDisplay.innerHTML = `
@@ -123,7 +124,10 @@ function startTimer(correctIndex) {
     timerInterval = setInterval(() => {
         time--;
         bar.style.width = (time / TIME_PER_QUESTION * 100) + "%";
-        if (time <= 0) { stopTimer(); checkAnswer(-1, correctIndex); }
+        if (time <= 0) { 
+            stopTimer(); 
+            checkAnswer(-1, correctIndex); 
+        }
     }, 1000);
 }
 
