@@ -68,7 +68,6 @@
 
         h1 { font-size: 26px; color: #2e7d32; margin-bottom: 10px; }
         .subtitle { font-size: 18px; color: #555; margin-bottom: 30px; }
-        .source-info { font-size: 13px; color: #888; margin-top: 20px; }
 
         .quiz-screen {
             flex-grow: 1;
@@ -108,10 +107,9 @@
             font-size: 18px;
             background: white;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
         .option.correct { background: #2e7d32 !important; color: white !important; }
-        .option.wrong { background: #b71c1c !important; color: white !important; border-color: #b71c1c !important; }
+        .option.wrong { background: #b71c1c !important; color: white !important; }
 
         #nextBtn {
             position: fixed;
@@ -142,7 +140,6 @@
             box-sizing: border-box;
         }
 
-        .score-box h2 { font-size: 50px; margin: 0; }
         .bg-pass { background-color: #2e7d32; }
         .bg-oral { background-color: #ff9800; }
         .bg-fail { background-color: #b71c1c; }
@@ -158,3 +155,31 @@
             font-size: 14px;
             line-height: 1.4;
             text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="start-screen" class="start-screen">
+            <h1>Patentino Fitosanitario</h1>
+            <p class="subtitle">Esercitazione per il rilascio del certificato di abilitazione.</p>
+            
+            <div id="ios-info">
+                <strong style="color: #1565c0;">📲 Installa su iPhone:</strong><br>
+                Tocca l'icona <strong>Condividi</strong> (il quadrato con la freccia) e seleziona <strong>"Aggiungi alla schermata Home"</strong>.
+            </div>
+
+            <button id="install-btn" class="btn-ersa" style="display:none; background-color: #1565c0 !important; margin-bottom: 15px;">Installa App Android</button>
+            
+            <button id="start-btn" class="btn-ersa">Inizia l'esercitazione</button>
+            <p style="font-size: 13px; color: #888; margin-top: 20px;">Fonte: ERSA</p>
+        </div>
+
+        <div id="quiz-container" style="display:none; flex-grow: 1;"></div>
+        <div id="score" style="display:none; flex-grow: 1;"></div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
