@@ -1,13 +1,11 @@
-// BAN LIST per domande da non utilizzare
 const bannedQuestions = [70, 140, 141, 148];
-
 let allQuestions = [];
 let quizQuestions = [];
 let current = 0;
 let correctCount = 0;
-
 let timerInterval;
 const TIME_PER_QUESTION = 60;
+const TOTAL_QUESTIONS = 25; // Modificato a 25 come richiesto
 
 const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
@@ -16,244 +14,130 @@ const scoreDisplay = document.getElementById("score");
 
 startBtn.addEventListener("click", startQuiz);
 
-
-// AVVIO QUIZ
 async function startQuiz() {
+    try {
+        const res = await fetch("quiz.json");
+        allQuestions = await res.json();
+        const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
+        
+        // Mescola e prendi 25 domande
+        quizQuestions = shuffle(availableQuestions).slice(0, TOTAL_QUESTIONS);
 
-    const res = await fetch("quiz.json");
-    allQuestions = await res.json();
-
-    const availableQuestions = allQuestions.filter(
-        q => !bannedQuestions.includes(q.id)
-    );
-
-    quizQuestions = shuffle(availableQuestions).slice(0, 30);
-
-    startScreen.style.display = "none";
-    quizContainer.style.display = "block";
-
-    correctCount = 0;
-    current = 0;
-
-    showQuestion();
+        startScreen.style.display = "none";
+        quizContainer.style.display = "block";
+        scoreDisplay.style.display = "none";
+        
+        current = 0;
+        correctCount = 0;
+        showQuestion();
+    } catch (e) {
+        alert("Errore nel caricamento del file quiz.json");
+    }
 }
 
-
-// RANDOM DOMANDE
 function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
 }
 
-
-// MOSTRA DOMANDA
 function showQuestion() {
-
     const q = quizQuestions[current];
     const correctIndex = q.correct;
 
     quizContainer.innerHTML = `
-
         <div class="quiz-screen">
-
-            <div id="timer">Tempo: 60</div>
-
             <div id="timeBarContainer">
                 <div id="timeBar"></div>
             </div>
-
-            <div class="question">
-                <strong>Domanda ${current + 1}</strong><br>
-                ${q.question}
-            </div>
-
+            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Domanda ${current + 1} di ${TOTAL_QUESTIONS}</div>
+            <div class="question">${q.question}</div>
             <div class="answers">
-
-                ${q.options.map((opt, i) =>
-                    `<div class="option" data-index="${i}">${opt}</div>`
-                ).join("")}
-
+                ${q.options.map((opt, i) => `
+                    <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
+                `).join('')}
             </div>
-
-            <div class="next-container">
-                <button id="nextBtn" style="display:none;">Next</button>
-            </div>
-
+            <button id="nextBtn" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
 
-    updateScore();
     startTimer(correctIndex);
-
-    document.querySelectorAll(".option").forEach(btn => {
-        btn.addEventListener("click", () => selectAnswer(btn, correctIndex));
-    });
-
-    document.getElementById("nextBtn").addEventListener("click", nextQuestion);
 }
 
-
-// SELEZIONE RISPOSTA
-function selectAnswer(selectedBtn, correctIndex) {
-
+function checkAnswer(selected, correct) {
     stopTimer();
+    const options = document.querySelectorAll(".option");
+    options.forEach(opt => opt.style.pointerEvents = "none");
 
-    const buttons = document.querySelectorAll(".option");
-
-    buttons.forEach((btn, i) => {
-
-        btn.style.pointerEvents = "none";
-
-        if (i === correctIndex) {
-            btn.classList.add("correct");
-        }
-
-    });
-
-    const selectedIndex = parseInt(selectedBtn.dataset.index);
-
-    if (selectedIndex === correctIndex) {
-
+    if (selected === correct) {
+        options[selected].classList.add("correct");
         correctCount++;
-        selectedBtn.classList.add("correct");
-
     } else {
-
-        selectedBtn.classList.add("wrong");
-
+        if (selected !== -1) options[selected].classList.add("wrong");
+        options[correct].classList.add("correct");
     }
 
     document.getElementById("nextBtn").style.display = "block";
 }
 
-
-// NEXT DOMANDA
 function nextQuestion() {
-
     current++;
-
     if (current < quizQuestions.length) {
-
         showQuestion();
-
     } else {
-
-        showResult();
-
+        showResults();
     }
-
 }
 
+function showResults() {
+    quizContainer.style.display = "none";
+    scoreDisplay.style.display = "block";
 
-// RISULTATO FINALE
-function showResult() {
-
-    let background = "";
+    let resultClass = "";
+    let title = "";
     let message = "";
 
-    if (correctCount >= 28) {
-
-        background = "#4CAF50";
-
-        message = `
-        🎉 Complimenti! 🎉<br><br>
-        Hai superato il test con un ottimo risultato.<br>
-        Sei decisamente preparato!
-        `;
-
-    } else if (correctCount >= 23) {
-
-        background = "#ff9800";
-
-        message = `
-        👍 Buon lavoro!<br><br>
-        Sei vicino alla preparazione completa.<br>
-        Un piccolo ripasso e sarai pronto!
-        `;
-
+    if (correctCount >= 24) {
+        // SCENARIO VERDE: PASSATO
+        resultClass = "res-pass";
+        title = "ESAME SUPERATO";
+        message = "Eccellente! Hai dimostrato una preparazione completa.";
+    } else if (correctCount >= 21) {
+        // SCENARIO ARANCIONE: ORALE AUSILIARIO
+        resultClass = "res-oral";
+        title = "ESAME SUPERATO*";
+        message = "Esame superato con riserva. Sarà necessario sostenere un esame orale ausiliario per confermare l'abilitazione.";
     } else {
-
-        background = "#f44336";
-
-        message = `
-        📚 Continua a studiare!<br><br>
-        Ripassa gli argomenti e riprova il test.
-        `;
-
+        // SCENARIO ROSSO: NON SUPERATO
+        resultClass = "res-fail";
+        title = "ESAME NON SUPERATO";
+        message = "Attenzione: ERSA permette due tentativi per ogni domanda d'esame. Se entrambi non sono positivi, sarà necessario presentare nuovamente la documentazione per una nuova richiesta d'esame.";
     }
 
-    quizContainer.innerHTML = `
-        <div id="resultScreen" style="background:${background}">
-            <h2>Risultato finale</h2>
-            <h1>${correctCount} / ${quizQuestions.length}</h1>
-            <p>${message}</p>
-            <button id="restartBtn">Rifai il quiz</button>
+    scoreDisplay.innerHTML = `
+        <div class="result-screen ${resultClass}">
+            <h1>${title}</h1>
+            <div class="score-box">${correctCount} / ${TOTAL_QUESTIONS}</div>
+            <p class="result-msg">${message}</p>
+            <button id="restartBtn" onclick="location.reload()">RIPROVA ESERCITAZIONE</button>
         </div>
     `;
-
-    scoreDisplay.innerHTML = "";
-
-    document.getElementById("restartBtn").addEventListener("click", () => {
-        location.reload();
-    });
-
 }
 
-
-// TIMER
 function startTimer(correctIndex) {
-
     let time = TIME_PER_QUESTION;
-
-    const timerElem = document.getElementById("timer");
     const bar = document.getElementById("timeBar");
-
-    timerElem.textContent = "Tempo: " + time;
     bar.style.width = "100%";
 
+    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-
         time--;
-
-        timerElem.textContent = "Tempo: " + time;
         bar.style.width = (time / TIME_PER_QUESTION * 100) + "%";
-
         if (time <= 0) {
-
             stopTimer();
-            autoFail(correctIndex);
-
+            checkAnswer(-1, correctIndex);
         }
-
     }, 1000);
 }
 
-
-// TEMPO SCADUTO
-function autoFail(correctIndex) {
-
-    const buttons = document.querySelectorAll(".option");
-
-    buttons.forEach((btn, i) => {
-
-        btn.style.pointerEvents = "none";
-
-        if (i === correctIndex) {
-            btn.classList.add("correct");
-        }
-
-    });
-
-    document.getElementById("nextBtn").style.display = "block";
-}
-
-
-// STOP TIMER
 function stopTimer() {
     clearInterval(timerInterval);
-}
-
-
-// CONTATORE RISPOSTE
-function updateScore() {
-    scoreDisplay.textContent = `Corrette: ${correctCount} / ${quizQuestions.length}`;
 }
