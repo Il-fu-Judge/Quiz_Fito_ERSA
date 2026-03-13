@@ -21,23 +21,23 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: center; 
+            align-items: center; /* Centratura verticale globale */
         }
 
         #app {
             max-width: 600px;
             width: 100%;
-            height: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        /* PULSANTI ERSA (Grandi e verdi sempre) */
+        /* PULSANTI ERSA - Grandi, Verdi, Testo Bianco */
         .btn-ersa {
-            background-color: #2e7d32;
-            color: white;
+            background-color: #2e7d32 !important;
+            color: white !important;
             font-size: 18px;
             font-weight: bold;
             padding: 18px;
@@ -50,8 +50,6 @@
             box-sizing: border-box;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .btn-ersa:active { transform: scale(0.98); }
 
         /* SCHERMATA INIZIALE */
         .start-screen {
@@ -67,12 +65,13 @@
         .subtitle { font-size: 18px; color: #555; margin-bottom: 30px; }
         .source-info { font-size: 13px; color: #888; margin-top: 20px; }
 
-        /* QUIZ SCREEN - CENTRATURA VERTICALE REALE */
+        /* QUIZ SCREEN - Centratura Verticale Reale */
         .quiz-screen {
-            height: 100%;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Centra verticalmente il blocco domanda/risposte */
+            justify-content: center; /* Forza le domande al centro */
+            height: 100%;
         }
 
         .question {
@@ -83,12 +82,13 @@
             text-align: center;
         }
 
+        /* TIMER E PROGRESSO */
         #timeBarContainer {
             width: 100%;
             height: 10px;
             background: #ddd;
             border-radius: 5px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             overflow: hidden;
         }
         #timeBar {
@@ -107,7 +107,6 @@
             font-size: 18px;
             background: white;
             cursor: pointer;
-            text-align: left;
         }
         .option.correct { background: #2e7d32 !important; color: white !important; }
         .option.wrong { background: #b71c1c !important; color: white !important; border-color: #b71c1c !important; }
@@ -126,7 +125,7 @@
 
         /* RISULTATI */
         .result-container {
-            height: 100%;
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -138,26 +137,26 @@
             font-size: 28px;
             font-weight: bold;
             color: #2e7d32;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-transform: uppercase;
         }
 
         .score-box {
             width: 100%;
-            padding: 40px 20px;
+            padding: 35px 20px;
             border-radius: 20px;
             color: white;
             margin-bottom: 25px;
             box-sizing: border-box;
         }
 
-        .score-box h2 { font-size: 60px; margin: 0; }
-        .score-box p { font-size: 18px; margin-top: 15px; line-height: 1.4; font-weight: 500; }
+        .score-box h2 { font-size: 55px; margin: 0; }
+        .score-box p { font-size: 18px; margin-top: 12px; line-height: 1.4; }
 
-        /* COLORI BOX (Rosso ammorbidito) */
+        /* COLORI BOX RISULTATI */
         .bg-pass { background-color: #2e7d32; }
         .bg-oral { background-color: #ff9800; }
-        .bg-fail { background-color: #b71c1c; } /* Rosso bordeaux meno aggressivo */
+        .bg-fail { background-color: #b71c1c; } /* Rosso riposante */
 
     </style>
 </head>
