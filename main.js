@@ -7,7 +7,6 @@ let current = 0;
 let correctCount = 0;
 let timerInterval;
 let isReviewMode = false;
-let totalQuestionsInReview = 0;
 
 const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
@@ -49,11 +48,11 @@ function showQuestion() {
     quizContainer.innerHTML = `
         <div class="quiz-screen">
             ${!isReviewMode ? '<div id="timeBarContainer"><div id="timeBar"></div></div>' : ''}
-            <div style="text-align:center; font-size:13px; color:#666; margin-bottom:10px; font-weight:bold; flex-shrink:0;">
+            <div style="text-align:center; font-size:13px; color:#666; margin-bottom:5px; font-weight:bold; flex-shrink:0;">
                 ${isReviewMode ? `RECUPERO ERRORE ${current + 1} DI ${questionsList.length}` : `DOMANDA ${current + 1} DI 25`}
             </div>
             
-            <div class="scrollable-content">
+            <div class="play-area">
                 <div class="question">${q.question}</div>
                 <div class="answers">
                     ${q.options.map((opt, i) => `
@@ -145,7 +144,6 @@ function showResults(totalAttemptedInRound) {
             <div class="score-box ${bgClass}">
                 <h2>${scoreText}</h2>
                 <p style="font-style: italic; font-weight: bold; margin-bottom: 15px;">${message}</p>
-                ${!isReviewMode && correctCount < 21 ? `<p style="font-size: 14px; opacity: 0.9;">Ricorda: la documentazione è valida per due tentativi d'esame. Se necessario, dovrai ripresentare la domanda.</p>` : ''}
             </div>
             ${reviewBtnHtml}
             <button class="btn-ersa" onclick="location.reload()">Riprova l'esercitazione</button>
@@ -177,9 +175,7 @@ function stopTimer() { clearInterval(timerInterval); }
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('PWA OK'))
-            .catch(err => console.log('PWA KO', err));
+        navigator.serviceWorker.register('sw.js');
     });
 }
 
@@ -195,7 +191,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
         deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
+        await deferredPrompt.userChoice;
         deferredPrompt = null;
         installBtn.style.display = 'none';
     }
