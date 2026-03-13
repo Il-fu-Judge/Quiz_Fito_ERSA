@@ -1,5 +1,5 @@
 // --- SISTEMA DI ACCESSO CON GOOGLE SHEETS ---
-const SCRIPT_URL = "INCOLLA_QUI_IL_TUO_URL_DI_DISTRIBUZIONE"; // Quello che finisce con /exec
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXw2pKPkUfx6XWjY6heK7BBGLyVfxEki_JvFk-YcfrrAldqHvPIS4OLjsQNoeaQAtZ/exec"; // Quello che finisce con /exec
 
 function checkAuth() {
     if (localStorage.getItem("isAuthorized") === "true") {
