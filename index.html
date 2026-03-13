@@ -7,7 +7,7 @@
     <title>Esercitazione Patentino Fitosanitari ERSA</title>
 
     <style>
-        /* Reset e Base Full Screen */
+        /* RESET E BASE */
         html, body {
             height: 100%;
             margin: 0;
@@ -15,12 +15,13 @@
             font-family: Arial, Helvetica, sans-serif;
             background: #f5f7f5;
             color: #333;
+            overflow: hidden; /* Evita scroll durante il quiz */
         }
 
         body {
             display: flex;
             justify-content: center;
-            align-items: center; /* Centra tutto verticalmente */
+            align-items: center; 
         }
 
         #app {
@@ -33,54 +34,7 @@
             box-sizing: border-box;
         }
 
-        /* Schermata Iniziale */
-        .start-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        h1 { font-size: 26px; color: #2e7d32; margin-bottom: 10px; }
-        .subtitle { font-size: 18px; color: #555; margin-bottom: 30px; }
-        .source-info { font-size: 13px; color: #888; margin-top: 20px; }
-
-        /* Quiz Screen */
-        .quiz-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-bottom: 100px; /* Spazio per tasto avanti */
-        }
-
-        .question {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            line-height: 1.4;
-            text-align: center;
-        }
-
-        /* Timer e Progresso */
-        #timeBarContainer {
-            width: 100%;
-            height: 10px;
-            background: #ddd;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        #timeBar {
-            height: 100%;
-            width: 100%;
-            background: #2e7d32;
-            transition: width 1s linear;
-        }
-
-        /* Pulsanti Grandi e Verdi (Tutti) */
+        /* PULSANTI ERSA (Grandi e verdi sempre) */
         .btn-ersa {
             background-color: #2e7d32;
             color: white;
@@ -94,9 +48,57 @@
             width: 100%;
             display: block;
             box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        /* Opzioni Risposta */
+        .btn-ersa:active { transform: scale(0.98); }
+
+        /* SCHERMATA INIZIALE */
+        .start-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 { font-size: 26px; color: #2e7d32; margin-bottom: 10px; }
+        .subtitle { font-size: 18px; color: #555; margin-bottom: 30px; }
+        .source-info { font-size: 13px; color: #888; margin-top: 20px; }
+
+        /* QUIZ SCREEN - CENTRATURA VERTICALE REALE */
+        .quiz-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centra verticalmente il blocco domanda/risposte */
+        }
+
+        .question {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        #timeBarContainer {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        #timeBar {
+            height: 100%;
+            width: 100%;
+            background: #2e7d32;
+            transition: width 1s linear;
+        }
+
+        /* OPZIONI RISPOSTA */
         .option {
             border: 2px solid #2e7d32;
             border-radius: 10px;
@@ -107,10 +109,10 @@
             cursor: pointer;
             text-align: left;
         }
-        .option.correct { background: #2e7d32; color: white; }
-        .option.wrong { background: #f44336; color: white; border-color: #f44336; }
+        .option.correct { background: #2e7d32 !important; color: white !important; }
+        .option.wrong { background: #b71c1c !important; color: white !important; border-color: #b71c1c !important; }
 
-        /* Tasto Avanti Sticky */
+        /* TASTO AVANTI STICKY */
         #nextBtn {
             position: fixed;
             bottom: 30px;
@@ -122,9 +124,9 @@
             z-index: 100;
         }
 
-        /* Schermata Risultati */
+        /* RISULTATI */
         .result-container {
-            flex: 1;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -149,31 +151,4 @@
             box-sizing: border-box;
         }
 
-        .score-box h2 { font-size: 60px; margin: 0; }
-        .score-box p { font-size: 18px; margin-top: 15px; line-height: 1.4; font-weight: 500; }
-
-        /* Colori dinamici box */
-        .bg-pass { background-color: #2e7d32; }
-        .bg-oral { background-color: #ff9800; }
-        .bg-fail { background-color: #f44336; }
-
-    </style>
-</head>
-
-<body>
-    <div id="app">
-        <div id="start-screen" class="start-screen">
-            <h1>Patentino Fitosanitario</h1>
-            <p class="subtitle">Esercitazione per il rilascio del certificato di abilitazione.</p>
-            <button id="start-btn" class="btn-ersa">Inizia il Quiz</button>
-            <p class="source-info">Domande tratte dal sito ERSA • Aggiornato a Marzo 2026</p>
-        </div>
-
-        <div id="quiz-container" style="display:none; height: 100%;"></div>
-
-        <div id="score" style="display:none; height: 100%;"></div>
-    </div>
-
-    <script src="main.js"></script>
-</body>
-</html>
+        .score-
