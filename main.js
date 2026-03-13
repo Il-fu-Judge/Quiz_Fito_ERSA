@@ -1,51 +1,38 @@
-// --- LOGICA PWA: GESTIONE INSTALLAZIONE ---
+// --- RILEVAMENTO DISPOSITIVO E PWA ---
 let deferredPrompt;
-const installBtn = document.getElementById('install-pwa-btn');
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Impedisce a Chrome di mostrare il banner automatico
     e.preventDefault();
-    // Salva l'evento per usarlo in seguito
     deferredPrompt = e;
-    // Mostra il pulsante di installazione nell'interfaccia
-    if (installBtn) {
-        installBtn.style.display = 'block';
+    const installBtn = document.getElementById('install-pwa-btn');
+    if (installBtn) installBtn.style.display = 'block';
+});
+
+window.addEventListener('load', () => {
+    const iosInstruction = document.getElementById('ios-instruction');
+    // Mostra istruzioni solo se è iOS e l'app NON è già stata aggiunta alla home
+    if (isIOS && !isStandalone && iosInstruction) {
+        iosInstruction.style.display = 'block';
     }
 });
 
 async function installPWA() {
     if (!deferredPrompt) return;
-    
-    // Mostra il prompt di installazione
     deferredPrompt.prompt();
-    
-    // Attendi la risposta dell'utente
     const { outcome } = await deferredPrompt.userChoice;
-    console.log(`Risposta dell'utente all'installazione: ${outcome}`);
-    
-    // Pulizia: il prompt può essere usato una sola volta
+    if (outcome === 'accepted') {
+        const installBtn = document.getElementById('install-pwa-btn');
+        if (installBtn) installBtn.style.display = 'none';
+    }
     deferredPrompt = null;
-    if (installBtn) installBtn.style.display = 'none';
 }
 
-// Nascondi il pulsante se l'app viene installata con successo
-window.addEventListener('appinstalled', () => {
-    console.log('PWA installata correttamente!');
-    if (installBtn) installBtn.style.display = 'none';
-    deferredPrompt = null;
-});
-
-// --- LOGICA QUIZ ORIGINALE ---
+// --- LOGICA QUIZ ---
 const bannedQuestions = [70, 140, 141, 148];
-let allQuestions = [];
-let quizQuestions = [];
-let wrongQuestions = []; 
-let currentWrongAttempts = []; 
-let current = 0;
-let correctCount = 0;
-let timerInterval;
-let isReviewMode = false;
-let totalQuestionsInReview = 0;
+let allQuestions = [], quizQuestions = [], wrongQuestions = [], currentWrongAttempts = [];
+let current = 0, correctCount = 0, timerInterval, isReviewMode = false;
 
 const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
@@ -60,24 +47,15 @@ async function startQuiz() {
         allQuestions = await res.json();
         const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
         quizQuestions = shuffle(availableQuestions).slice(0, 25);
-
         startScreen.style.display = "none";
         quizContainer.style.display = "flex";
         scoreDisplay.style.display = "none";
-        
-        current = 0;
-        correctCount = 0;
-        wrongQuestions = [];
-        isReviewMode = false;
+        current = 0; correctCount = 0; wrongQuestions = []; isReviewMode = false;
         showQuestion();
-    } catch (e) {
-        alert("Errore nel caricamento dei dati.");
-    }
+    } catch (e) { alert("Errore nel caricamento."); }
 }
 
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
+function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
 function showQuestion() {
     const questionsList = isReviewMode ? wrongQuestions : quizQuestions;
@@ -99,7 +77,6 @@ function showQuestion() {
             <button id="nextBtn" class="btn-ersa" style="display:none;" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
-
     if (!isReviewMode) startTimer(correctIndex);
 }
 
@@ -122,98 +99,56 @@ function checkAnswer(selected, correct) {
 function nextQuestion() {
     const questionsList = isReviewMode ? wrongQuestions : quizQuestions;
     current++;
-    
     if (current < questionsList.length) {
         showQuestion();
     } else {
-        const lastWrongCount = isReviewMode ? wrongQuestions.length : 25 - correctCount;
+        const lastCount = isReviewMode ? wrongQuestions.length : 25 - correctCount;
         wrongQuestions = [...currentWrongAttempts];
         currentWrongAttempts = [];
-        showResults(lastWrongCount);
+        showResults(lastCount);
     }
 }
 
-function showResults(totalAttemptedInRound) {
+function showResults(totalAttempted) {
     quizContainer.style.display = "none";
     scoreDisplay.style.display = "flex";
-
-    let bgClass = "";
-    let title = "";
-    let message = "";
-    let scoreText = "";
+    let bg = "", title = "", msg = "", scoreText = "";
 
     if (!isReviewMode) {
         scoreText = `${correctCount} / 25`;
-        if (correctCount >= 24) {
-            bgClass = "bg-pass"; title = "Esame Superato";
-            message = "Complimenti! La tua preparazione è eccellente. Sei pronto per l'esame ufficiale!";
-        } else if (correctCount >= 21) {
-            bgClass = "bg-oral"; title = "Esame Superato*";
-            message = "Buon lavoro! Hai superato la prova, ma non abbassare la guardia: un ultimo sforzo per l'orale!";
-        } else {
-            bgClass = "bg-fail"; title = "Esame Non Superato";
-            message = "Non scoraggiarti! L'agricoltura richiede pazienza e dedizione. Rivedi i tuoi errori e riprova, ce la farai!";
-        }
+        if (correctCount >= 24) { bg="bg-pass"; title="Esame Superato"; msg="Eccellente!"; }
+        else if (correctCount >= 21) { bg="bg-oral"; title="Esame Superato*"; msg="Bene, ma ripassa per l'orale."; }
+        else { bg="bg-fail"; title="Non Superato"; msg="Riprova, ce la farai!"; }
     } else {
-        const correctsInReview = totalAttemptedInRound - wrongQuestions.length;
-        scoreText = `${correctsInReview} / ${totalAttemptedInRound}`;
-
-        if (wrongQuestions.length === 0) {
-            bgClass = "bg-pass";
-            title = "Recupero Completato";
-            message = "Ottimo! Hai corretto ogni incertezza. Ogni errore affrontato è una lezione imparata per sempre!";
-        } else {
-            bgClass = "bg-fail";
-            title = "Recupero Incompleto";
-            message = "Stai andando bene! Alcuni concetti sono ostici, ma affrontandoli uno ad uno diventerai un esperto.";
-        }
+        const corrects = totalAttempted - wrongQuestions.length;
+        scoreText = `${corrects} / ${totalAttempted}`;
+        if (wrongQuestions.length === 0) { bg="bg-pass"; title="Recupero OK"; msg="Tutti gli errori corretti!"; }
+        else { bg="bg-fail"; title="Recupero Parziale"; msg="Qualche errore è rimasto."; }
     }
 
-    const reviewBtnHtml = wrongQuestions.length > 0 
-        ? `<button class="btn-ersa" style="background-color: #555 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
-        : "";
-
+    const reviewBtn = wrongQuestions.length > 0 ? `<button class="btn-ersa" style="background-color:#555!important;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` : "";
     scoreDisplay.innerHTML = `
         <div class="result-container">
             <div class="result-title">${title}</div>
-            <div class="score-box ${bgClass}">
-                <h2>${scoreText}</h2>
-                <p style="font-style: italic; font-weight: bold; margin-bottom: 15px;">${message}</p>
-                ${!isReviewMode && correctCount < 21 ? `<p style="font-size: 14px; opacity: 0.9;">Ricorda: la documentazione è valida per due tentativi d'esame. Se necessario, dovrai ripresentare la domanda.</p>` : ''}
-            </div>
-            ${reviewBtnHtml}
-            <button class="btn-ersa" onclick="location.reload()">Riprova l'esercitazione</button>
+            <div class="score-box ${bg}"><h2>${scoreText}</h2><p>${msg}</p></div>
+            ${reviewBtn}
+            <button class="btn-ersa" onclick="location.reload()">Torna alla Home</button>
         </div>
     `;
 }
 
-function startReview() {
-    isReviewMode = true;
-    current = 0;
-    currentWrongAttempts = [];
-    scoreDisplay.style.display = "none";
-    quizContainer.style.display = "flex";
-    showQuestion();
-}
-
-function startTimer(correctIndex) {
-    let time = 60;
-    const bar = document.getElementById("timeBar");
-    clearInterval(timerInterval);
+function startReview() { isReviewMode = true; current = 0; currentWrongAttempts = []; scoreDisplay.style.display = "none"; quizContainer.style.display = "flex"; showQuestion(); }
+function startTimer(idx) {
+    let t = 60; const bar = document.getElementById("timeBar");
     timerInterval = setInterval(() => {
-        time--;
-        if (bar) bar.style.width = (time / 60 * 100) + "%";
-        if (time <= 0) { stopTimer(); checkAnswer(-1, correctIndex); }
+        t--; if (bar) bar.style.width = (t/60*100) + "%";
+        if (t <= 0) { stopTimer(); checkAnswer(-1, idx); }
     }, 1000);
 }
-
 function stopTimer() { clearInterval(timerInterval); }
 
-// Registrazione Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('PWA: Service Worker registrato correttamente'))
-            .catch(err => console.log('PWA: Errore registrazione', err));
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Errore', err));
     });
 }
