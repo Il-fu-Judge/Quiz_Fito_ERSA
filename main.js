@@ -7,7 +7,7 @@ let current = 0;
 let correctCount = 0;
 let timerInterval;
 let isReviewMode = false;
-let totalQuestionsInReview = 0; // Per calcolare il punteggio nel recupero
+let totalQuestionsInReview = 0;
 
 const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
@@ -24,7 +24,7 @@ async function startQuiz() {
         quizQuestions = shuffle(availableQuestions).slice(0, 25);
 
         startScreen.style.display = "none";
-        quizContainer.style.display = "flex";
+        quizContainer.style.display = "block";
         scoreDisplay.style.display = "none";
         
         current = 0;
@@ -49,15 +49,19 @@ function showQuestion() {
     quizContainer.innerHTML = `
         <div class="quiz-screen">
             ${!isReviewMode ? '<div id="timeBarContainer"><div id="timeBar"></div></div>' : ''}
-            <div style="text-align:center; font-size:13px; color:#666; margin-bottom:10px; font-weight:bold;">
+            <div style="text-align:center; font-size:13px; color:#666; margin-bottom:10px; font-weight:bold; flex-shrink:0;">
                 ${isReviewMode ? `RECUPERO ERRORE ${current + 1} DI ${questionsList.length}` : `DOMANDA ${current + 1} DI 25`}
             </div>
-            <div class="question">${q.question}</div>
-            <div class="answers">
-                ${q.options.map((opt, i) => `
-                    <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
-                `).join('')}
+            
+            <div class="scrollable-content">
+                <div class="question">${q.question}</div>
+                <div class="answers">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
+                    `).join('')}
+                </div>
             </div>
+
             <button id="nextBtn" class="btn-ersa" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
@@ -76,8 +80,6 @@ function checkAnswer(selected, correct) {
     } else {
         if (selected !== -1) options[selected].classList.add("wrong");
         options[correct].classList.add("correct");
-        
-        // Salva la domanda per il prossimo round di revisione
         currentWrongAttempts.push(isReviewMode ? wrongQuestions[current] : quizQuestions[current]);
     }
     document.getElementById("nextBtn").style.display = "block";
@@ -99,7 +101,7 @@ function nextQuestion() {
 
 function showResults(totalAttemptedInRound) {
     quizContainer.style.display = "none";
-    scoreDisplay.style.display = "flex";
+    scoreDisplay.style.display = "block";
 
     let bgClass = "";
     let title = "";
@@ -107,7 +109,6 @@ function showResults(totalAttemptedInRound) {
     let scoreText = "";
 
     if (!isReviewMode) {
-        // --- RISULTATI QUIZ PRINCIPALE ---
         scoreText = `${correctCount} / 25`;
         if (correctCount >= 24) {
             bgClass = "bg-pass"; title = "Esame Superato";
@@ -120,7 +121,6 @@ function showResults(totalAttemptedInRound) {
             message = "Non scoraggiarti! L'agricoltura richiede pazienza e dedizione. Rivedi i tuoi errori e riprova, ce la farai!";
         }
     } else {
-        // --- RISULTATI RECUPERO ERRORI ---
         const correctsInReview = totalAttemptedInRound - wrongQuestions.length;
         scoreText = `${correctsInReview} / ${totalAttemptedInRound}`;
 
@@ -135,7 +135,6 @@ function showResults(totalAttemptedInRound) {
         }
     }
 
-    // PULSANTE RIVEDI ERRORI - Ora usa lo stesso blu dell'installazione (#1565c0)
     const reviewBtnHtml = wrongQuestions.length > 0 
         ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` 
         : "";
@@ -159,7 +158,7 @@ function startReview() {
     current = 0;
     currentWrongAttempts = [];
     scoreDisplay.style.display = "none";
-    quizContainer.style.display = "flex";
+    quizContainer.style.display = "block";
     showQuestion();
 }
 
@@ -179,12 +178,11 @@ function stopTimer() { clearInterval(timerInterval); }
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('PWA: Service Worker registrato correttamente'))
-            .catch(err => console.log('PWA: Errore registrazione', err));
+            .then(reg => console.log('PWA OK'))
+            .catch(err => console.log('PWA KO', err));
     });
 }
 
-// --- GESTIONE INSTALLAZIONE ANDROID ---
 let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
 
@@ -198,13 +196,11 @@ installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to install prompt: ${outcome}`);
         deferredPrompt = null;
         installBtn.style.display = 'none';
     }
 });
 
 window.addEventListener('appinstalled', () => {
-    console.log('App installata!');
     installBtn.style.display = 'none';
 });
