@@ -1,4 +1,6 @@
-// --- SISTEMA DI ACCESSO ---
+// --- SISTEMA DI ACCESSO CON GOOGLE SHEETS ---
+const SCRIPT_URL = "INCOLLA_QUI_IL_TUO_URL_DI_DISTRIBUZIONE"; // Quello che finisce con /exec
+
 function checkAuth() {
     if (localStorage.getItem("isAuthorized") === "true") {
         document.getElementById("auth-overlay").style.display = "none";
@@ -9,24 +11,41 @@ function checkAuth() {
 
 async function validateCode() {
     const input = document.getElementById("access-code").value.trim().toUpperCase();
+    const btn = document.querySelector("#auth-overlay .btn-ersa");
+    
     if (!input) { alert("Per favore, inserisci un codice."); return; }
 
-    try {
-        const response = await fetch("codes.json");
-        const validCodes = await response.json();
+    btn.disabled = true;
+    btn.innerText = "VERIFICA IN CORSO...";
 
-        if (validCodes.includes(input)) {
+    try {
+        // Inviamo il codice allo script di Google
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ code: input })
+        });
+
+        const data = await response.json();
+
+        if (data.result === "success") {
             localStorage.setItem("isAuthorized", "true");
             document.getElementById("auth-overlay").style.display = "none";
-        } else {
-            alert("Codice non valido.");
+            alert("Accesso sbloccato con successo!");
+        } else if (data.result === "already_used") {
+            alert("Questo codice è già stato utilizzato.");
+        } else if (data.result === "not_found") {
+            alert("Codice non valido. Riprova.");
         }
     } catch (e) {
-        alert("Errore nel caricamento del file codes.json");
+        console.error(e);
+        alert("Errore durante la verifica. Controlla la connessione.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "SBLOCCA";
     }
 }
 
-// Esegui il controllo immediatamente
+// Avvia il controllo all'apertura
 checkAuth();
 // --------------------------
 const bannedQuestions = [70, 140, 141, 148];
