@@ -12,36 +12,45 @@ const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
 const startScreen = document.getElementById("start-screen");
 const scoreDisplay = document.getElementById("score");
+const authOverlay = document.getElementById("auth-overlay");
 
-startBtn.addEventListener("click", startQuiz);
+// --- LOGICA DI ACCESSO (LOCK) ---
 
-async function checkAccess() {
-    const inputCode = document.getElementById("access-code").value.trim().toUpperCase();
-    const savedAuth = localStorage.getItem("isAuthorized");
+function checkInitialAccess() {
+    if (localStorage.getItem("isAuthorized") === "true") {
+        authOverlay.style.display = "none";
+    } else {
+        authOverlay.style.display = "flex";
+    }
+}
 
-    if (savedAuth === "true") return true;
-    if (!inputCode) { alert("Inserisci il codice fornito per iniziare."); return false; }
+async function validateCode() {
+    const input = document.getElementById("access-code").value.trim().toUpperCase();
+    if (!input) return alert("Inserisci un codice.");
 
     try {
         const response = await fetch("codes.json");
         const validCodes = await response.json();
-        if (validCodes.includes(inputCode)) {
+
+        if (validCodes.includes(input)) {
             localStorage.setItem("isAuthorized", "true");
-            return true;
+            authOverlay.style.display = "none";
         } else {
-            alert("Codice errato o non valido.");
-            return false;
+            alert("Codice non valido.");
         }
     } catch (e) {
-        alert("Errore verifica: assicurati che codes.json sia presente.");
-        return false;
+        alert("Errore nel caricamento dei codici. Verifica il file codes.json.");
     }
 }
 
-async function startQuiz() {
-    const authorized = await checkAccess();
-    if (!authorized) return;
+// Esegui subito il controllo all'apertura
+checkInitialAccess();
 
+// --- LOGICA QUIZ ORIGINALE ---
+
+startBtn.addEventListener("click", startQuiz);
+
+async function startQuiz() {
     try {
         const res = await fetch("quiz.json");
         allQuestions = await res.json();
@@ -58,7 +67,7 @@ async function startQuiz() {
         isReviewMode = false;
         showQuestion();
     } catch (e) {
-        alert("Errore nel caricamento dei dati.");
+        alert("Errore nel caricamento dei dati del quiz.");
     }
 }
 
@@ -127,19 +136,19 @@ function showResults(total) {
     } else {
         bgClass = (wrongQuestions.length === 0) ? "bg-pass" : "bg-fail";
         title = (wrongQuestions.length === 0) ? "Recupero Completato" : "Recupero Incompleto";
-        message = (wrongQuestions.length === 0) ? "Hai corretto ogni errore!" : "Riprova i concetti ostici.";
+        message = (wrongQuestions.length === 0) ? "Hai corretto ogni errore!" : "Riprova ancora.";
     }
 
     scoreDisplay.innerHTML = `
         <div class="result-container">
-            <div class="result-title">${title}</div>
+            <div style="font-size:24px; font-weight:bold; color:#2e7d32; margin-bottom:20px;">${title}</div>
             <div class="score-box ${bgClass}">
-                <h2>${scoreText}</h2>
-                <p>${message}</p>
-                ${!isReviewMode && correctCount < 21 ? '<p style="font-size: 14px; opacity:0.8;">Hai due tentativi d\'esame validi.</p>' : ''}
+                <h2 style="font-size:50px; margin:0;">${scoreText}</h2>
+                <p style="font-style:italic; font-weight:bold;">${message}</p>
+                ${!isReviewMode && correctCount < 21 ? '<p style="font-size:14px; opacity:0.8;">La documentazione vale per due tentativi.</p>' : ''}
             </div>
-            ${wrongQuestions.length > 0 ? `<button class="btn-ersa" style="background-color: #1565c0 !important; margin-bottom: 10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` : ''}
-            <button class="btn-ersa" onclick="location.reload()">Riprova l'esercitazione</button>
+            ${wrongQuestions.length > 0 ? `<button class="btn-ersa" style="background-color:#1565c0 !important; margin-bottom:10px;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` : ''}
+            <button class="btn-ersa" onclick="location.reload()">Riprova</button>
         </div>
     `;
 }
@@ -162,12 +171,10 @@ function startTimer(correctIndex) {
 
 function stopTimer() { clearInterval(timerInterval); }
 
-// RILEVA IPHONE / ANDROID
+// --- IPHONE / ANDROID / PWA ---
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 if (isIos && !isStandalone) document.getElementById('ios-info').style.display = 'block';
-
-if (localStorage.getItem("isAuthorized") === "true") document.getElementById('auth-section').style.display = 'none';
 
 let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
