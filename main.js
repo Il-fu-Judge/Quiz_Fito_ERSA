@@ -1,4 +1,4 @@
-// --- RILEVAMENTO DISPOSITIVO E PWA ---
+// --- PWA & IOS LOGIC ---
 let deferredPrompt;
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
@@ -6,15 +6,12 @@ const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    const installBtn = document.getElementById('install-pwa-btn');
-    if (installBtn) installBtn.style.display = 'block';
+    document.getElementById('install-pwa-btn').style.display = 'block';
 });
 
 window.addEventListener('load', () => {
-    const iosInstruction = document.getElementById('ios-instruction');
-    // Mostra istruzioni solo se è iOS e l'app NON è già stata aggiunta alla home
-    if (isIOS && !isStandalone && iosInstruction) {
-        iosInstruction.style.display = 'block';
+    if (isIOS && !isStandalone) {
+        document.getElementById('ios-instruction').style.display = 'block';
     }
 });
 
@@ -22,14 +19,11 @@ async function installPWA() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-        const installBtn = document.getElementById('install-pwa-btn');
-        if (installBtn) installBtn.style.display = 'none';
-    }
+    if (outcome === 'accepted') document.getElementById('install-pwa-btn').style.display = 'none';
     deferredPrompt = null;
 }
 
-// --- LOGICA QUIZ ---
+// --- QUIZ LOGIC ---
 const bannedQuestions = [70, 140, 141, 148];
 let allQuestions = [], quizQuestions = [], wrongQuestions = [], currentWrongAttempts = [];
 let current = 0, correctCount = 0, timerInterval, isReviewMode = false;
@@ -38,6 +32,7 @@ const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
 const startScreen = document.getElementById("start-screen");
 const scoreDisplay = document.getElementById("score");
+const nextBtn = document.getElementById("nextBtn");
 
 startBtn.addEventListener("click", startQuiz);
 
@@ -47,12 +42,14 @@ async function startQuiz() {
         allQuestions = await res.json();
         const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
         quizQuestions = shuffle(availableQuestions).slice(0, 25);
+        
         startScreen.style.display = "none";
         quizContainer.style.display = "flex";
         scoreDisplay.style.display = "none";
+        
         current = 0; correctCount = 0; wrongQuestions = []; isReviewMode = false;
         showQuestion();
-    } catch (e) { alert("Errore nel caricamento."); }
+    } catch (e) { alert("Errore caricamento dati."); }
 }
 
 function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
@@ -62,11 +59,12 @@ function showQuestion() {
     const q = questionsList[current];
     const correctIndex = q.correct;
 
+    // Struttura interna fluida per mantenere la centratura
     quizContainer.innerHTML = `
-        <div class="quiz-screen">
+        <div style="width:100%;">
             ${!isReviewMode ? '<div id="timeBarContainer"><div id="timeBar"></div></div>' : ''}
-            <div style="text-align:center; font-size:13px; color:#666; margin-bottom:10px; font-weight:bold;">
-                ${isReviewMode ? `RECUPERO ERRORE ${current + 1} DI ${questionsList.length}` : `DOMANDA ${current + 1} DI 25`}
+            <div style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">
+                ${isReviewMode ? `RECUPERO ERRORE ${current + 1}/${questionsList.length}` : `DOMANDA ${current + 1}/25`}
             </div>
             <div class="question">${q.question}</div>
             <div class="answers">
@@ -74,9 +72,9 @@ function showQuestion() {
                     <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
                 `).join('')}
             </div>
-            <button id="nextBtn" class="btn-ersa" style="display:none;" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
+    nextBtn.style.display = "none";
     if (!isReviewMode) startTimer(correctIndex);
 }
 
@@ -93,7 +91,7 @@ function checkAnswer(selected, correct) {
         options[correct].classList.add("correct");
         currentWrongAttempts.push(isReviewMode ? wrongQuestions[current] : quizQuestions[current]);
     }
-    document.getElementById("nextBtn").style.display = "block";
+    nextBtn.style.display = "block";
 }
 
 function nextQuestion() {
@@ -111,33 +109,37 @@ function nextQuestion() {
 
 function showResults(totalAttempted) {
     quizContainer.style.display = "none";
+    nextBtn.style.display = "none";
     scoreDisplay.style.display = "flex";
+    
     let bg = "", title = "", msg = "", scoreText = "";
 
     if (!isReviewMode) {
         scoreText = `${correctCount} / 25`;
-        if (correctCount >= 24) { bg="bg-pass"; title="Esame Superato"; msg="Eccellente!"; }
-        else if (correctCount >= 21) { bg="bg-oral"; title="Esame Superato*"; msg="Bene, ma ripassa per l'orale."; }
-        else { bg="bg-fail"; title="Non Superato"; msg="Riprova, ce la farai!"; }
+        if (correctCount >= 24) { bg="bg-pass"; title="Superato"; msg="Ottimo lavoro!"; }
+        else if (correctCount >= 21) { bg="bg-oral"; title="Superato*"; msg="Passato con riserva."; }
+        else { bg="bg-fail"; title="Non Superato"; msg="Devi studiare ancora."; }
     } else {
         const corrects = totalAttempted - wrongQuestions.length;
         scoreText = `${corrects} / ${totalAttempted}`;
-        if (wrongQuestions.length === 0) { bg="bg-pass"; title="Recupero OK"; msg="Tutti gli errori corretti!"; }
-        else { bg="bg-fail"; title="Recupero Parziale"; msg="Qualche errore è rimasto."; }
+        bg = wrongQuestions.length === 0 ? "bg-pass" : "bg-fail";
+        title = "Recupero"; msg = "Revisione completata.";
     }
 
     const reviewBtn = wrongQuestions.length > 0 ? `<button class="btn-ersa" style="background-color:#555!important;" onclick="startReview()">Rivedi Errori (${wrongQuestions.length})</button>` : "";
+    
     scoreDisplay.innerHTML = `
-        <div class="result-container">
+        <div style="width:100%;">
             <div class="result-title">${title}</div>
             <div class="score-box ${bg}"><h2>${scoreText}</h2><p>${msg}</p></div>
             ${reviewBtn}
-            <button class="btn-ersa" onclick="location.reload()">Torna alla Home</button>
+            <button class="btn-ersa" onclick="location.reload()">Home</button>
         </div>
     `;
 }
 
 function startReview() { isReviewMode = true; current = 0; currentWrongAttempts = []; scoreDisplay.style.display = "none"; quizContainer.style.display = "flex"; showQuestion(); }
+
 function startTimer(idx) {
     let t = 60; const bar = document.getElementById("timeBar");
     timerInterval = setInterval(() => {
@@ -149,6 +151,6 @@ function stopTimer() { clearInterval(timerInterval); }
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Errore', err));
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error', err));
     });
 }
