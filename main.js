@@ -22,7 +22,7 @@ async function startQuiz() {
         quizQuestions = shuffle(availableQuestions).slice(0, TOTAL_QUESTIONS);
 
         startScreen.style.display = "none";
-        quizContainer.style.display = "block";
+        quizContainer.style.display = "flex"; // Usiamo flex per mantenere la centratura
         scoreDisplay.style.display = "none";
         
         current = 0;
@@ -30,7 +30,7 @@ async function startQuiz() {
         showQuestion();
     } catch (e) {
         console.error(e);
-        alert("Errore nel caricamento dei dati.");
+        alert("Caricamento fallito. Verifica la connessione.");
     }
 }
 
@@ -45,7 +45,7 @@ function showQuestion() {
     quizContainer.innerHTML = `
         <div class="quiz-screen">
             <div id="timeBarContainer"><div id="timeBar"></div></div>
-            <div style="text-align:center; font-size:14px; color:#666; margin-bottom:10px; font-weight:bold;">DOMANDA ${current + 1} DI ${TOTAL_QUESTIONS}</div>
+            <div style="text-align:center; font-size:13px; color:#666; margin-bottom:10px; font-weight:bold;">DOMANDA ${current + 1} DI ${TOTAL_QUESTIONS}</div>
             <div class="question">${q.question}</div>
             <div class="answers">
                 ${q.options.map((opt, i) => `
@@ -93,15 +93,15 @@ function showResults() {
     if (correctCount >= 24) {
         bgClass = "bg-pass";
         title = "Esame Superato";
-        message = "Ottima preparazione! Hai superato l'esercitazione.";
+        message = "Eccellente! Hai dimostrato una preparazione perfetta.";
     } else if (correctCount >= 21) {
         bgClass = "bg-oral";
         title = "Esame Superato*";
-        message = "Esame superato con riserva. Sarà necessario sostenere un esame orale ausiliario.";
+        message = "Superato con riserva. Sarà necessario sostenere un esame orale ausiliario.";
     } else {
         bgClass = "bg-fail";
         title = "Esame Non Superato";
-        message = "ERSA permette due tentativi. Se negativi, bisognerà rifare la richiesta consegnando nuovamente i documenti.";
+        message = "Documentazione da rifare se i tentativi ERSA sono esauriti.";
     }
 
     scoreDisplay.innerHTML = `
