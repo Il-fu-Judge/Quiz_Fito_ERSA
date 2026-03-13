@@ -107,9 +107,10 @@
             font-size: 18px;
             background: white;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
-        .option.correct { background: #2e7d32 !important; color: white !important; }
-        .option.wrong { background: #b71c1c !important; color: white !important; }
+        .option.correct { background: #2e7d32 !important; color: white !important; border-color: #2e7d32 !important; }
+        .option.wrong { background: #b71c1c !important; color: white !important; border-color: #b71c1c !important; }
 
         #nextBtn {
             position: fixed;
@@ -140,6 +141,9 @@
             box-sizing: border-box;
         }
 
+        .score-box h2 { font-size: 50px; margin: 0; }
+        .score-box p { font-size: 17px; margin-top: 12px; line-height: 1.4; }
+
         .bg-pass { background-color: #2e7d32; }
         .bg-oral { background-color: #ff9800; }
         .bg-fail { background-color: #b71c1c; }
@@ -168,13 +172,12 @@
             
             <div id="ios-info">
                 <strong style="color: #1565c0;">📲 Installa su iPhone:</strong><br>
-                Tocca l'icona <strong>Condividi</strong> (il quadrato con la freccia) e seleziona <strong>"Aggiungi alla schermata Home"</strong>.
+                Tocca l'icona <strong>Condividi</strong> (il quadrato con la freccia in alto) e seleziona <strong>"Aggiungi alla schermata Home"</strong>.
             </div>
 
             <button id="install-btn" class="btn-ersa" style="display:none; background-color: #1565c0 !important; margin-bottom: 15px;">Installa App Android</button>
-            
             <button id="start-btn" class="btn-ersa">Inizia l'esercitazione</button>
-            <p style="font-size: 13px; color: #888; margin-top: 20px;">Fonte: ERSA</p>
+            <p style="font-size: 13px; color: #888; margin-top: 20px;">Fonte: ERSA • Aggiornato 2026</p>
         </div>
 
         <div id="quiz-container" style="display:none; flex-grow: 1;"></div>
