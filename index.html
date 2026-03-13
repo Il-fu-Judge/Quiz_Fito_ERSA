@@ -2,251 +2,178 @@
 <html lang="it">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>Esercitazione Patentino Fitosanitario</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <style>
-        :root {
-            --primary-green: #2e7d32;
-            --white: #ffffff;
-            --text-dark: #333333;
-            --bg-gray: #f8f9f8;
-            --error-red: #d32f2f;
-        }
+<title>Test Patentino Fitosanitari ERSA</title>
 
-        body, html {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--white);
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+<style>
 
-        #app {
-            width: 100%;
-            max-width: 600px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+body{
+font-family: Arial, Helvetica, sans-serif;
+background:#f5f7f5;
+margin:0;
+padding:0;
+display:flex;
+justify-content:center;
+}
 
-        /* --- SCHERMATA INIZIALE --- */
-        .start-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
+#app{
+max-width:600px;
+width:100%;
+padding:20px;
+box-sizing:border-box;
+}
 
-        h1 {
-            color: var(--primary-green);
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
+h1{
+text-align:center;
+font-size:24px;
+margin-bottom:30px;
+color:#2e7d32;
+}
 
-        .subtitle {
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 40px;
-        }
+button{
+font-size:18px;
+padding:14px;
+border-radius:8px;
+border:2px solid #2e7d32;
+background:white;
+color:#2e7d32;
+cursor:pointer;
+}
 
-        .source-info {
-            font-size: 13px;
-            color: #888;
-            margin-top: 20px;
-        }
+button:active{
+transform:scale(0.97);
+}
 
-        /* --- PROGRESS BAR --- */
-        .header-quiz {
-            width: 100%;
-            padding: 10px 0;
-        }
+#start-btn{
+width:100%;
+font-size:20px;
+background:#2e7d32;
+color:white;
+}
 
-        .progress-container {
-            height: 8px;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
+.question{
+font-size:20px;
+margin-bottom:20px;
+}
 
-        #progressBar {
-            height: 100%;
-            width: 0%;
-            background-color: var(--primary-green);
-            transition: width 0.4s ease;
-        }
+.quiz-screen{
+    max-width:700px;
+    margin:auto;
+    min-height:70vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
 
-        #timer-display {
-            font-weight: bold;
-            color: var(--primary-green);
-            font-size: 14px;
-            text-align: right;
-            display: block;
-        }
+.answers{
+    margin-top:20px;
+}
 
-        /* --- CONTENUTO QUIZ --- */
-        .quiz-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+.next-container{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:15px;
+}
+    
+.option{
+border:2px solid #2e7d32;
+border-radius:10px;
+padding:16px;
+margin-bottom:14px;
+font-size:18px;
+background:white;
+cursor:pointer;
+}
 
-        .question {
-            font-size: 22px;
-            font-weight: bold;
-            line-height: 1.4;
-            margin-bottom: 30px;
-            color: #000;
-        }
+.option:active{
+transform:scale(0.98);
+}
 
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+.option.correct{
+background:#4CAF50;
+color:white;
+border-color:#4CAF50;
+}
 
-        .option {
-            background: var(--white);
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 17px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-        }
+.option.wrong{
+background:#f44336;
+color:white;
+border-color:#f44336;
+}
 
-        .option:hover {
-            border-color: var(--primary-green);
-            background-color: #f1f8f1;
-        }
+#timer{
+font-size:18px;
+margin-bottom:8px;
+}
 
-        .option.selected {
-            border-color: var(--primary-green);
-            background-color: #e8f5e9;
-        }
+#timeBarContainer{
+width:100%;
+height:10px;
+background:#ddd;
+border-radius:5px;
+margin-bottom:20px;
+overflow:hidden;
+}
 
-        /* --- FOOTER FEEDBACK (Stile Immersivo) --- */
-        #feedback-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 30px 20px;
-            display: none;
-            justify-content: center;
-            z-index: 100;
-        }
+#timeBar{
+height:100%;
+width:100%;
+background:#4CAF50;
+transition:width 1s linear;
+}
 
-        .feedback-content {
-            max-width: 600px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+#nextBtn{
+width:120px;
+position:fixed;
+bottom:20px;
+right:20px;
+background:#2e7d32;
+color:white;
+border:none;
+font-size:18px;
+}
 
-        .feedback-text h2 {
-            margin: 0;
-            font-size: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+#score{
+position:fixed;
+bottom:20px;
+left:20px;
+font-size:16px;
+background:white;
+padding:8px 12px;
+border-radius:6px;
+border:1px solid #ccc;
+}
 
-        .correct-bg { background-color: #e8f5e9; color: var(--primary-green); border-top: 2px solid var(--primary-green); }
-        .wrong-bg { background-color: #ffebee; color: var(--error-red); border-top: 2px solid var(--error-red); }
+#resultScreen{
+color:white;
+padding:30px;
+border-radius:10px;
+text-align:center;
+}
 
-        /* --- BOTTONI --- */
-        .btn-main {
-            background-color: var(--primary-green);
-            color: white;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: opacity 0.2s;
-        }
+</style>
 
-        .btn-main:active {
-            opacity: 0.8;
-        }
-
-        #nextBtn {
-            background-color: var(--primary-green);
-        }
-
-        .wrong-bg #nextBtn {
-            background-color: var(--error-red);
-        }
-
-        /* RISULTATI */
-        .result-screen {
-            text-align: center;
-            justify-content: center;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .score-val {
-            font-size: 54px;
-            font-weight: 800;
-            color: var(--primary-green);
-            margin: 20px 0;
-        }
-    </style>
 </head>
 
 <body>
 
-    <div id="app">
-        <div id="start-screen" class="start-screen">
-            <h1>Patentino Fitosanitario</h1>
-            <p class="subtitle">Esercitazione per il rilascio del certificato di abilitazione.</p>
-            <button id="start-btn" class="btn-main">Inizia il Quiz</button>
-            <span class="source-info">Domande tratte dal sito ERSA • Aggiornato a Marzo 2026</span>
-        </div>
+<div id="app">
 
-        <div id="quiz-container" style="display:none; height: 100%;">
-            <div class="header-quiz">
-                <span id="timer-display">60s</span>
-                <div class="progress-container">
-                    <div id="progressBar"></div>
-                </div>
-            </div>
+<h1>Test Patentino Fitosanitari ERSA (Marzo 2026)</h1>
 
-            <div class="quiz-content">
-                <div id="question-text" class="question"></div>
-                <div id="options-container" class="options-container"></div>
-            </div>
-        </div>
+<div id="start-screen">
+<button id="start-btn">Genera Quiz</button>
+</div>
 
-        <div id="score-screen" style="display:none;" class="result-screen"></div>
-    </div>
+<div id="quiz-container" style="display:none;"></div>
 
-    <div id="feedback-footer">
-        <div class="feedback-content">
-            <div class="feedback-text">
-                <h2 id="feedback-title">Corretto</h2>
-            </div>
-            <button id="nextBtn" class="btn-main" onclick="nextQuestion()">Continua</button>
-        </div>
-    </div>
+<div id="score"></div>
 
-    <script src="main.js"></script>
+</div>
+
+<script src="main.js"></script>
+
 </body>
 </html>
