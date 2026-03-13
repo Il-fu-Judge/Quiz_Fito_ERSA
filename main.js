@@ -5,7 +5,7 @@ let current = 0;
 let correctCount = 0;
 let timerInterval;
 const TIME_PER_QUESTION = 60;
-const TOTAL_QUESTIONS = 25; // Modificato a 25 come richiesto
+const TOTAL_QUESTIONS = 25;
 
 const quizContainer = document.getElementById("quiz-container");
 const startBtn = document.getElementById("start-btn");
@@ -19,8 +19,6 @@ async function startQuiz() {
         const res = await fetch("quiz.json");
         allQuestions = await res.json();
         const availableQuestions = allQuestions.filter(q => !bannedQuestions.includes(q.id));
-        
-        // Mescola e prendi 25 domande
         quizQuestions = shuffle(availableQuestions).slice(0, TOTAL_QUESTIONS);
 
         startScreen.style.display = "none";
@@ -31,7 +29,7 @@ async function startQuiz() {
         correctCount = 0;
         showQuestion();
     } catch (e) {
-        alert("Errore nel caricamento del file quiz.json");
+        alert("Errore caricamento dati.");
     }
 }
 
@@ -45,20 +43,17 @@ function showQuestion() {
 
     quizContainer.innerHTML = `
         <div class="quiz-screen">
-            <div id="timeBarContainer">
-                <div id="timeBar"></div>
-            </div>
-            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Domanda ${current + 1} di ${TOTAL_QUESTIONS}</div>
+            <div id="timeBarContainer"><div id="timeBar"></div></div>
+            <div style="text-align:center; font-size:14px; color:#666; margin-bottom:10px;">Domanda ${current + 1} di ${TOTAL_QUESTIONS}</div>
             <div class="question">${q.question}</div>
             <div class="answers">
                 ${q.options.map((opt, i) => `
                     <div class="option" onclick="checkAnswer(${i}, ${correctIndex})">${opt}</div>
                 `).join('')}
             </div>
-            <button id="nextBtn" onclick="nextQuestion()">AVANTI</button>
+            <button id="nextBtn" class="btn-green" onclick="nextQuestion()">AVANTI</button>
         </div>
     `;
-
     startTimer(correctIndex);
 }
 
@@ -74,7 +69,6 @@ function checkAnswer(selected, correct) {
         if (selected !== -1) options[selected].classList.add("wrong");
         options[correct].classList.add("correct");
     }
-
     document.getElementById("nextBtn").style.display = "block";
 }
 
@@ -89,35 +83,34 @@ function nextQuestion() {
 
 function showResults() {
     quizContainer.style.display = "none";
-    scoreDisplay.style.display = "block";
+    scoreDisplay.style.display = "flex";
 
-    let resultClass = "";
+    let bgClass = "";
     let title = "";
     let message = "";
 
     if (correctCount >= 24) {
-        // SCENARIO VERDE: PASSATO
-        resultClass = "res-pass";
+        bgClass = "bg-pass";
         title = "ESAME SUPERATO";
-        message = "Eccellente! Hai dimostrato una preparazione completa.";
+        message = "Ottima preparazione! Hai superato brillantemente l'esercitazione.";
     } else if (correctCount >= 21) {
-        // SCENARIO ARANCIONE: ORALE AUSILIARIO
-        resultClass = "res-oral";
+        bgClass = "bg-oral";
         title = "ESAME SUPERATO*";
-        message = "Esame superato con riserva. Sarà necessario sostenere un esame orale ausiliario per confermare l'abilitazione.";
+        message = "Esame superato. Sarà necessario sostenere un esame orale ausiliario per confermare l'abilitazione.";
     } else {
-        // SCENARIO ROSSO: NON SUPERATO
-        resultClass = "res-fail";
+        bgClass = "bg-fail";
         title = "ESAME NON SUPERATO";
-        message = "Attenzione: ERSA permette due tentativi per ogni domanda d'esame. Se entrambi non sono positivi, sarà necessario presentare nuovamente la documentazione per una nuova richiesta d'esame.";
+        message = "ERSA permette due tentativi. Se entrambi sono negativi, bisognerà rifare la richiesta consegnando nuovamente la documentazione.";
     }
 
     scoreDisplay.innerHTML = `
-        <div class="result-screen ${resultClass}">
-            <h1>${title}</h1>
-            <div class="score-box">${correctCount} / ${TOTAL_QUESTIONS}</div>
-            <p class="result-msg">${message}</p>
-            <button id="restartBtn" onclick="location.reload()">RIPROVA ESERCITAZIONE</button>
+        <div class="result-container">
+            <div class="result-title">${title}</div>
+            <div class="score-box ${bgClass}">
+                <h2>${correctCount} / ${TOTAL_QUESTIONS}</h2>
+                <p>${message}</p>
+            </div>
+            <button id="restartBtn" class="btn-green" onclick="location.reload()">Riprova l'Esercitazione</button>
         </div>
     `;
 }
@@ -125,19 +118,12 @@ function showResults() {
 function startTimer(correctIndex) {
     let time = TIME_PER_QUESTION;
     const bar = document.getElementById("timeBar");
-    bar.style.width = "100%";
-
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         time--;
         bar.style.width = (time / TIME_PER_QUESTION * 100) + "%";
-        if (time <= 0) {
-            stopTimer();
-            checkAnswer(-1, correctIndex);
-        }
+        if (time <= 0) { stopTimer(); checkAnswer(-1, correctIndex); }
     }, 1000);
 }
 
-function stopTimer() {
-    clearInterval(timerInterval);
-}
+function stopTimer() { clearInterval(timerInterval); }
